@@ -20,10 +20,10 @@ type FormState = SettlementRequest & {
 
 /** minimal values so TS stops complaining – will be replaced by API data */
 const blank: FormState = {
-  settlementId : '',
+  id : '',
   userId       : '',
   usageNominal : 0,
-  transactionDate : '',
+  transactionDate : null,
   submissionDate  : '',
   latitude     : null,
   longitude    : null,
@@ -33,7 +33,7 @@ const blank: FormState = {
 
 /** which fields come from the server and must be shown read-only */
 const locked: (keyof FormState)[] = [
-  'settlementId',
+  'id',
   'userId',
   'submissionDate',
   'latitude',
@@ -41,6 +41,18 @@ const locked: (keyof FormState)[] = [
 ];
 
 /* ─────────────────────────────  COMPONENT  ──────────────────────────────── */
+type NativeInputProps = React.InputHTMLAttributes<HTMLInputElement>;
+
+export const toDate = (value: string | null): string | null => {
+  if (!value) return null;
+  const d = new Date(value);
+  return d.toISOString().slice(0, 19);;
+};
+
+export interface InputProps
+  extends Omit<NativeInputProps, 'value'> {   // ⬅ remove original
+  value?: string | number | readonly string[] | null;  // add our own
+}
 
 export default function FormSettlement() {
   /* --------------- hooks & state --------------- */
@@ -135,9 +147,18 @@ export default function FormSettlement() {
       const token = localStorage.getItem('token');
       if (!token) throw new Error('Not logged in');
 
+      if (form.transactionDate == null) {
+        toast.error("No date provided")
+        return
+      }
+
+      const transactionDateNew = new Date(form.transactionDate)
+
       const body = {
         ...form,
-        submissionDate: iso(new Date())
+        submissionDate: iso(new Date()),
+        transactionDate: iso(transactionDateNew),
+        settlementId: form.id
       };
 
     const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/settlement/manage/fill`,
@@ -171,27 +192,68 @@ export default function FormSettlement() {
       )}
 
       <form onSubmit={submit} className="flex flex-col gap-5">
-        {/* ====== read-only fields ====== */}
-        <Input label="Settlement ID"      name="settlementId"
-               value={form.settlementId}  readOnly />
-        <Input label="User ID"            name="userId"
-               value={form.userId}        readOnly />
+        {/* ===== read-only fields ===== */}
+        
+      <div className="flex flex-col">
+        <p className="text-xs sm:text-sm mt-1 font-semibold">
+            Settlement ID<span className="text-danger">*</span>
+          </p>
+        <Input
+          name="settlementId"
+          value={form.id ?? ''}   // ← null-safe
+          readOnly
+        />
+      </div>
 
-        {/* ====== editable fields ====== */}
-        <Input label="Nominal Dipakai" name="usageNominal"
-               value={form.usageNominal}
-               onChange={handleChange} required />
 
-        <Input type="datetime-local"  label="Tanggal Transaksi"
-               name="transactionDate"
-               value={form.transactionDate}
-               onChange={handleChange} required />
+      <div className="flex flex-col">
+        <p className="text-xs sm:text-sm mt-1 font-semibold">
+            User ID<span className="text-danger">*</span>
+          </p>
+        <Input
+          name="userId"
+          value={form.userId ?? ''}
+          readOnly
+        />
+      </div>
 
+        {/* ===== editable fields ===== */}
+        
+      <div className="flex flex-col">
+        <p className="text-xs sm:text-sm mt-1 font-semibold">
+            Nominal digunakan<span className="text-danger">*</span>
+          </p>
+        <Input
+          name="usageNominal"
+          value={form.usageNominal ?? ''}   // number \| null → string
+          onChange={handleChange}
+          required
+        />
+      </div>
+
+      <div className="flex flex-col">
+        <p className="text-xs sm:text-sm mt-1 font-semibold">
+            Tanggal transaksi<span className="text-danger">*</span>
+          </p>
+        <Input
+          type="datetime-local"
+          name="transactionDate"
+          value={toDate(form.transactionDate) ?? ''}
+          onChange={handleChange}
+          required
+        />
+      </div>
+
+      <div className="flex flex-col">
         <label className="text-xs font-semibold">Deskripsi*</label>
-        <textarea name="description"
-                  className="border rounded-md p-2 bg-accent-base resize-none"
-                  value={form.description}
-                  onChange={handleChange} required />
+        <textarea
+          name="description"
+          className="border rounded-md p-2 bg-accent-base resize-none"
+          value={form.description ?? ''}   // null-safe
+          onChange={handleChange}
+          required
+        />
+      </div>
 
         {/* ====== bukti foto ====== */}
         <div className="flex justify-between items-center">
@@ -202,15 +264,15 @@ export default function FormSettlement() {
           </Button>
         </div>
 
-        <div className="bg-accent-base mt-2 p-3 rounded-md flex justify-center">
+        <div className="bg-accent-base mt-2 rounded flex justify-center shadow overflow-hidden">
             {preview ? (
               <img
                 key={imgKey}
                 src={`data:image/jpeg;base64,${preview}`}
-                alt="Invoice Preview"
+                alt="Image Data"
                 width={240}
                 height={80}
-                className="rounded-md"
+                className="w-full h-[200px] object-cover"
               />
             ) : (
               <div className="w-[240px] h-[80px] flex items-center justify-center text-gray-400">

@@ -1,5 +1,5 @@
 export type SettlementRequest = {
-    settlementId: string | null
+    id: string | null
     userId: string | null
     usageNominal: number | null
     transactionDate: string | null

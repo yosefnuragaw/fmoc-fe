@@ -38,8 +38,7 @@ export default function CreateSettlement() {
 
     if (res.status == 201) {
         toast.success(res.data.message)
-        const settlementId: string = res.data.id;
-        router.replace(`/settlement/fill/${settlementId}`);
+        router.replace(`/settlement/fill/${requestDanaId}`);
     } 
 
     else {
