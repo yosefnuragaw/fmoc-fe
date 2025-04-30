@@ -38,6 +38,8 @@ const UserProfileComponent: React.FC = () => {
     const [error, setError] = useState<string | null>(null);
     const router = useRouter();
     const [isLogoutDialogOpen, setIsLogoutDialogOpen] = useState(false);
+    const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
+    const [filterPeriode, setFilterPeriode] = useState<'All' | 'Last 7 days' | 'Last 30 days'>('All');
 
     const handleLogout = () => {
         try {
@@ -71,6 +73,24 @@ const UserProfileComponent: React.FC = () => {
     };
 
     const formatValue = (value: string | null) => (value ? value : "-");
+
+    const filteredSortedTransactions = [...transactions]
+        .filter((row) => {
+            const time = new Date(row.time);
+            return (
+                filterPeriode === 'All' ||
+                (filterPeriode === 'Last 7 days' &&
+                    time >= new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)) ||
+                (filterPeriode === 'Last 30 days' &&
+                    time >= new Date(Date.now() - 30 * 24 * 60 * 60 * 1000))
+            );
+        })
+        .sort((a, b) => {
+            const timeA = new Date(a.time).getTime();
+            const timeB = new Date(b.time).getTime();
+            return sortDirection === 'asc' ? timeA - timeB : timeB - timeA;
+        });
+
 
     useEffect(() => {
         const fetchData = async () => {
@@ -114,19 +134,15 @@ const UserProfileComponent: React.FC = () => {
         return <div className="p-6 text-center">Loading...</div>;
     }
 
-    if (!userData) {
-        return <div className="p-6 text-center">Profile tidak ditemukan</div>;
-    }
-
     return (
-        <div className="rounded-md shadow-md overflow-hidden flex flex-col p-4 md:p-7 gap-6">
+        <div className="rounded-md shadow-md overflow-hidden flex flex-col p-4 md:p-7 gap-4 bg-white">
             {/* Header */}
-            <div className="h-8 border-b-2 border-accent-base flex items-center pb-4">
+            <div className="h-10 border-b-2 border-accent-base flex items-center pb-4">
                 <h2 className="text-lg font-bold">Informasi Pengguna</h2>
             </div>
 
             {/* Tab Navigation */}
-            <div className="flex border-b -mt-3">
+            <div className="flex border-b -mt-2">
                 <button
                     className={`flex-1 py-1 text-xs font-medium ${activeTab === "ringkasan"
                         ? "text-blue-600 border-b-2 border-blue-600"
@@ -134,7 +150,7 @@ const UserProfileComponent: React.FC = () => {
                         }`}
                     onClick={() => setActiveTab("ringkasan")}
                 >
-                    Ringkasan
+                    Profil
                 </button>
                 <button
                     className={`flex-1 py-1 text-xs font-medium ${activeTab === "riwayat"
@@ -148,61 +164,106 @@ const UserProfileComponent: React.FC = () => {
             </div>
 
             {activeTab === 'ringkasan' ? (
-                <div className="flex flex-col md:flex-row gap-6">
-                    <div className="flex flex-col gap-5 w-full md:w-1/2">
-                        {[{ label: "Nama", value: userData.name },
-                        { label: "Email", value: userData.email },
-                        { label: "Area", value: formatArea(userData.area) }].map((item, index) => (
-                            <div key={index} className="flex flex-col gap-1 w-full">
-                                <div className="body-3 font-semibold">{item.label}</div>
-                                <div className="px-2 py-2 bg-accent-base body-3 rounded">{item.value}</div>
-                            </div>
-                        ))}
+                (!userData) ? (
+                    <p className="text-center text-xs text-neutral-400">Profil tidak ditemukan</p>
+                ) : (
+                    <div className="flex flex-col md:flex-row gap-3">
+                        <div className="flex flex-col gap-3 w-full md:w-1/2">
+                            {[{ label: "Nama", value: userData.name },
+                            { label: "Saldo", value: formatCurrency(userData.saldo) },
+                            { label: "Email", value: userData.email }].map((item, index) => (
+                                <div key={index} className="flex flex-col gap-1 w-full">
+                                    <div className="body-3 font-semibold">{item.label}</div>
+                                    <div className="px-2 py-2 bg-accent-base body-3 rounded">{item.value}</div>
+                                </div>
+                            ))}
+                        </div>
+
+                        <div className="flex flex-col gap-3 w-full md:w-1/2">
+                            {[
+                                { label: "Nomor Rekening", value: formatValue(userData.nomorRekening) },
+                                { label: "Nomor Mobil", value: formatValue(userData.nomorMobil) },
+                                { label: "Nomor Genset", value: formatValue(userData.nomorGenset) },
+                                { label: "Area", value: formatArea(userData.area) }].map((item, index) => (
+                                    <div key={index} className="flex flex-col gap-1 w-full">
+                                        <div className="body-3 font-semibold">{item.label}</div>
+                                        <div className="px-2 py-2 bg-accent-base body-3 rounded">{item.value}</div>
+                                    </div>
+                                ))}
+                        </div>
+                    </div>
+                )
+            ) : (
+                <div className="flex flex-col gap-2">
+                    <div className="flex justify-between items-center -mt-2">
+                        <select
+                            value={sortDirection}
+                            onChange={(e) => setSortDirection(e.target.value as 'asc' | 'desc')}
+                            className="border px-2 py-1 rounded body-3 text-gray-500"
+                        >
+                            <option value="desc">Terbaru</option>
+                            <option value="asc">Terlama</option>
+                        </select>
+
+                        <select
+                            value={filterPeriode}
+                            onChange={(e) => setFilterPeriode(e.target.value as 'All' | 'Last 7 days' | 'Last 30 days')}
+                            className="border px-2 py-1 rounded body-3 text-gray-500"
+                        >
+                            <option value="All">Semua</option>
+                            <option value="Last 7 days">7 Hari Terakhir</option>
+                            <option value="Last 30 days">30 Hari Terakhir</option>
+                        </select>
                     </div>
 
-                    <div className="flex flex-col gap-5 w-full md:w-1/2">
-                        {[{ label: "Saldo", value: formatCurrency(userData.saldo) },
-                        { label: "Nomor Rekening", value: formatValue(userData.nomorRekening) },
-                        { label: "Nomor Mobil", value: formatValue(userData.nomorMobil) },
-                        { label: "Nomor Genset", value: formatValue(userData.nomorGenset) }].map((item, index) => (
-                            <div key={index} className="flex flex-col gap-1 w-full">
-                                <div className="body-3 font-semibold">{item.label}</div>
-                                <div className="px-2 py-2 bg-accent-base body-3 rounded">{item.value}</div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            ) : (
-                <div className="flex flex-col gap-4">
                     {transactions.length === 0 ? (
-                            <p className="text-center text-xs text-neutral-400">Tidak ada transaksi</p>
+                        <p className="text-center text-xs text-neutral-400">Tidak ada transaksi</p>
                     ) : error ? (
                         <>
                             {toast.error("Terjadi kesalahan saat memuat transaksi")}
                             <p className="text-center text-xs text-danger">Tidak ada transaksi</p>
                         </>
                     ) : (
-                        transactions.map((transaction) => (
-                            <div
-                                key={transaction.wo}
-                                className="flex justify-between items-center border-b pb-4 last:border-0 text-sm"
-                            >
-                                <div className="flex flex-col">
-                                    <p className="body-3 font-medium">{transaction.type}</p>
-                                    <p className="body-3 text-neutral-500">
-                                        {new Date(transaction.time).toLocaleDateString("id-ID")}
-                                    </p>
-                                </div>
-                                <p
-                                    className={`text-right ${transaction.type === "credit"
-                                        ? "text-success"
-                                        : "text-danger"
-                                        }`}
+                        filteredSortedTransactions.map((transaction) => {
+                            const isCredit = transaction.type === "Settlement";
+                            const tanggal = new Date(transaction.time);
+                            const day = tanggal.getDate();
+                            const monthYear = tanggal.toLocaleDateString("id-ID", {
+                                month: "short",
+                                year: "numeric",
+                            });
+
+                            const formattedNominal = new Intl.NumberFormat("id-ID", {
+                                style: "currency",
+                                currency: "IDR",
+                                minimumFractionDigits: 2,
+                            }).format(transaction.nominal);
+
+                            return (
+                                <div
+                                    key={transaction.wo}
+                                    className="flex items-center gap-3 p-2 border rounded-md bg-white shadow-sm"
                                 >
-                                    {transaction.type === "credit" ? "+" : "-"}Rp{transaction.nominal}
-                                </p>
-                            </div>
-                        ))
+                                    <div className="bg-accent-base text-center rounded-md px-1.5 py-2 shrink-0">
+                                        <div className="body-2 font-semibold leading-none">{day}</div>
+                                        <div className="body-4 font-medium uppercase tracking-wide">
+                                            {monthYear}
+                                        </div>
+                                    </div>
+
+                                    <div className="flex flex-col gap-1 flex-1">
+                                        <p className="body-3 font-semibold">{transaction.type} Diterima</p>
+                                        <span
+                                            className={`body-4 font-semibold px-2 py-1 rounded w-fit ${isCredit ? "bg-red-200 text-danger-900" : "bg-green-200 text-success-900"
+                                                }`}
+                                        >
+                                            {isCredit ? "- " : "+ "}
+                                            {formattedNominal}
+                                        </span>
+                                    </div>
+                                </div>
+                            );
+                        })
                     )}
                 </div>
             )}
