@@ -8,7 +8,7 @@ import axios from "axios";
 import { toast } from "sonner";
 import CameraCapture from "@/components/cam/camera-capture";
 
-const categories = { BENSIN: 0, GENSET: 1 } as const;
+const categories = { BBMMobil: 0, BBMMotor: 1, Parkir: 3, Toll: 2 } as const;
 type CategoryType = keyof typeof categories;
 const initialFormData = {
   wo: "",
@@ -18,7 +18,7 @@ const initialFormData = {
   imgData: null as string | null,
   latitude: null as number | null,
   longitude: null as number | null,
-  category: "BENSIN" as CategoryType,
+  category: "BBMMobil" as CategoryType,
   transactionDate: "",
 };
 
@@ -95,7 +95,7 @@ export default function FormRequest() {
     e.preventDefault();
     setLoading(true);
     if (!formData.imgData) {
-      toast.error("Upload bukti invoice sebelum submit.");
+      toast.error("Upload bukti invoice sebelum dikirimkan.");
       setLoading(false);
       return;
     }
@@ -105,24 +105,29 @@ export default function FormRequest() {
       const payload = JSON.parse(atob(token.split(".")[1]));
       const userId = payload.UUID;
       const body = {
-        ...formData,
+        wo: formData.wo,
         userId,
         nominal: parseFloat(formData.nominal) || 0,
+        description: formData.description,
+        imgData: formData.imgData,
+        latitude: formData.latitude,
+        longitude: formData.longitude,
+        category: categories[formData.category],
         transactionDate: formatDate(new Date(formData.transactionDate)),
         submissionDate: formatDate(new Date()),
       };
       await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/reimbursement/manage/add`,
+        `${process.env.NEXT_PUBLIC_API_URL}/request/manage/add`,
         body,
         { headers: { Authorization: `Bearer ${token}` } },
       );
-      toast.success("Reimbursement berhasil diajukan.");
+      toast.success("Pengajuan dana berhasil diajukan.");
       localStorage.removeItem("formData");
       setFormData(initialFormData);
       setPreviewInvoice(null);
     } catch (error) {
       console.error(error);
-      toast.error("Gagal mengajukan reimbursement.");
+      toast.error("Gagal mengajukan pengajuan dana.");
     } finally {
       setLoading(false);
     }
@@ -177,43 +182,28 @@ export default function FormRequest() {
           </select>
         </div>
 
-        {/* Transaction Date */}
-        <div className="flex flex-col">
-          <p className="text-xs sm:text-sm mt-1 font-semibold">
-            Transaction Date<span className="text-danger">*</span>
-          </p>
-          <Input
-            type="datetime-local"
-            name="transactionDate"
-            value={formData.transactionDate}
-            onChange={handleChange}
-            required
-          />
-        </div>
-
         {/* Bukti Invoice */}
         <div className="flex flex-col">
           <div className="flex justify-between items-center">
             <p className="text-xs sm:text-sm mt-1 font-semibold">
-              Bukti Invoice<span className="text-danger">*</span>
+              Bukti Pengajuan Dana<span className="text-danger">*</span>
             </p>
-            <Button type="button" variant="primary" onClick={() => setShowCamera(true)}>
-              Capture Photo
+            <Button className="text-xs sm:text-sm mt-1" type="button" variant="primary" onClick={() => setShowCamera(true)}>
+                Foto
             </Button>
           </div>
-          <div className="bg-accent-base mt-2 p-3 rounded-md flex justify-center">
+          <div className="bg-accent-base mt-2  rounded flex justify-center shadow overflow-hidden">
             {previewInvoice ? (
-              <img
+                <img
                 key={imgKey}
-                src={`data:image/jpeg;base64,${previewInvoice}`}
-                alt="Invoice Preview"
-                width={240}
-                height={80}
-                className="rounded-md"
-              />
+                src={`data:image/jpeg;base64,${previewInvoice}`}// assuming href URL, not base64
+                alt="Image Data"
+                className="w-full h-[200px] object-cover"
+                />
+       
             ) : (
               <div className="w-[240px] h-[80px] flex items-center justify-center text-gray-400">
-                No invoice uploaded
+                Belum Ada Bukti Pengajuan
               </div>
             )}
           </div>
@@ -221,8 +211,8 @@ export default function FormRequest() {
 
         {/* Submit */}
         <div className="flex justify-end mt-4">
-          <Button type="submit" variant="primary" disabled={loading}>
-            {loading ? "Submitting..." : "Submit Request"}
+          <Button className="text-xs sm:text-sm mt-1" type="submit" variant="primary" disabled={loading}>
+            {loading ? "Mengajukan..." : "Ajukan Dana"}
           </Button>
         </div>
       </form>
