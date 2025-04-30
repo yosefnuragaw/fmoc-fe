@@ -8,7 +8,7 @@ import axios from "axios";
 import { toast } from "sonner";
 import CameraCapture from "@/components/cam/camera-capture";
 
-const categories = { BBM_Mobil: 0, BBM_Motor: 1, Parkir: 3, Toll: 4 } as const;
+const categories = { BBMMobil: 0, BBMMotor: 1, Parkir: 3, Toll: 2 } as const;
 type CategoryType = keyof typeof categories;
 const initialFormData = {
   wo: "",
@@ -18,7 +18,7 @@ const initialFormData = {
   imgData: null as string | null,
   latitude: null as number | null,
   longitude: null as number | null,
-  category: "BENSIN" as CategoryType,
+  category: "BBMMobil" as CategoryType,
   transactionDate: "",
 };
 
