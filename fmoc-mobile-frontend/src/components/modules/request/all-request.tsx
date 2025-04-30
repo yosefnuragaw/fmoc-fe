@@ -18,7 +18,7 @@ export default function AllRequest() {
     if (userError || dataError) return <p className="text-red-500 text-center mt-10">{userError || dataError}</p>
 
     return (
-        <div className="flex flex-col h-screen w-full max-w-md mx-auto px-4 py-6">
+        <div className="flex flex-col h-screen w-full max-w-md mx-auto px-4 ">
             <HeroProfile userData={userData} />
 
             <div className="flex space-x-4 sm:space-x-6 border-b mt-6 overflow-x-auto">
@@ -37,7 +37,7 @@ export default function AllRequest() {
                 ))}
             </div>
 
-            <div className="flex-1 overflow-y-auto">
+            <div className="flex-1 pb-12">
                 <RequestCardList data={data} selectSettled={activeTab === "history"} />
             </div>
         </div>

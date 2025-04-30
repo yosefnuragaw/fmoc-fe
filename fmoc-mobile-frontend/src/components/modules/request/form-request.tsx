@@ -8,7 +8,7 @@ import axios from "axios";
 import { toast } from "sonner";
 import CameraCapture from "@/components/cam/camera-capture";
 
-const categories = { BENSIN: 0, GENSET: 1 } as const;
+const categories = { BBM_Mobil: 0, BBM_Motor: 1, Parkir: 3, Toll: 4 } as const;
 type CategoryType = keyof typeof categories;
 const initialFormData = {
   wo: "",
@@ -95,7 +95,7 @@ export default function FormRequest() {
     e.preventDefault();
     setLoading(true);
     if (!formData.imgData) {
-      toast.error("Upload bukti invoice sebelum submit.");
+      toast.error("Upload bukti invoice sebelum dikirimkan.");
       setLoading(false);
       return;
     }
@@ -105,24 +105,29 @@ export default function FormRequest() {
       const payload = JSON.parse(atob(token.split(".")[1]));
       const userId = payload.UUID;
       const body = {
-        ...formData,
+        wo: formData.wo,
         userId,
         nominal: parseFloat(formData.nominal) || 0,
+        description: formData.description,
+        imgData: formData.imgData,
+        latitude: formData.latitude,
+        longitude: formData.longitude,
+        category: categories[formData.category],
         transactionDate: formatDate(new Date(formData.transactionDate)),
         submissionDate: formatDate(new Date()),
       };
       await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/reimbursement/manage/add`,
+        `${process.env.NEXT_PUBLIC_API_URL}/request/manage/add`,
         body,
         { headers: { Authorization: `Bearer ${token}` } },
       );
-      toast.success("Reimbursement berhasil diajukan.");
+      toast.success("Pengajuan dana berhasil diajukan.");
       localStorage.removeItem("formData");
       setFormData(initialFormData);
       setPreviewInvoice(null);
     } catch (error) {
       console.error(error);
-      toast.error("Gagal mengajukan reimbursement.");
+      toast.error("Gagal mengajukan pengajuan dana.");
     } finally {
       setLoading(false);
     }
@@ -197,7 +202,7 @@ export default function FormRequest() {
             <p className="text-xs sm:text-sm mt-1 font-semibold">
               Bukti Invoice<span className="text-danger">*</span>
             </p>
-            <Button type="button" variant="primary" onClick={() => setShowCamera(true)}>
+            <Button className="text-xs sm:text-sm mt-1" type="button" variant="primary" onClick={() => setShowCamera(true)}>
               Capture Photo
             </Button>
           </div>
@@ -221,7 +226,7 @@ export default function FormRequest() {
 
         {/* Submit */}
         <div className="flex justify-end mt-4">
-          <Button type="submit" variant="primary" disabled={loading}>
+          <Button className="text-xs sm:text-sm mt-1" type="submit" variant="primary" disabled={loading}>
             {loading ? "Submitting..." : "Submit Request"}
           </Button>
         </div>
