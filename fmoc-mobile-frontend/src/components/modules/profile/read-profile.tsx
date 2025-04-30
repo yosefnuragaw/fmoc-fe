@@ -4,24 +4,7 @@ import { useEffect, useState } from "react";
 import { Button } from "../../ui/button";
 import axios from "axios";
 import { toast } from "sonner";
-
-type Area = {
-    subClusterName: string | null;
-    clusterName: string | null;
-    rmaName: string | null;
-    operatorName: string | null;
-};
-
-type UserData = {
-    name: string;
-    role: string;
-    email: string;
-    area: Area;
-    saldo: string | null;
-    nomorRekening: string | null;
-    nomorMobil: string | null;
-    nomorGenset: string | null;
-};
+import { Area, UserData } from "@/components/model/profile/models";
 
 type Transaction = {
     time: string;

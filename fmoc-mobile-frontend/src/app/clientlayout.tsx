@@ -1,37 +1,19 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
+import { usePathname, useRouter } from "next/navigation";
 import { HiMiniHome, HiDocumentPlus, HiMiniUser } from "react-icons/hi2";
+import { useAuth } from "@/components/hooks/useAuth";
 
 export default function ClientLayout({ children }: { children: React.ReactNode }) {
-    const [hasMounted, setHasMounted] = useState(false);
-    const [isLoading, setIsLoading] = useState(true);
-    const [userName, setUserName] = useState<string | null>(null);
-
+    const { isLoading, userName, isLoginPage, isResetPage } = useAuth();
     const pathname = usePathname();
     const router = useRouter();
 
-    const isLoginPage = pathname === "/login";
-    const isResetPage = pathname === "/reset-password";
-
-    useEffect(() => {
-        setHasMounted(true);
-        const token = localStorage.getItem("token");
-
-        if (!token && !isLoginPage && !isResetPage) {
-            router.push("/login");
-        } else {
-            setIsLoading(false);
-            setUserName(localStorage.getItem("name"));
-        }
-    }, []);
-
-    if (!hasMounted) return null;
+    if (isLoading) return null;
 
     const menuItems = [
-        { href: "/", icon: <HiMiniHome size={25} />, label: "Home" },
+        { href: "/home", icon: <HiMiniHome size={25} />, label: "Home" },
         { href: "/request", icon: <HiDocumentPlus size={25} />, label: "Create" },
         { href: "/profile", icon: <HiMiniUser size={25} />, label: "Profile" },
     ];
@@ -48,9 +30,6 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
                         height={40}
                         className="object-contain"
                     />
-                    <span className="text-xs font-medium text-neutral-700">
-                        {userName || "User"}
-                    </span>
                 </div>
             )}
 
@@ -59,8 +38,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
                 <main className={`${!isLoginPage ? "flex-grow p-4" : ""}`}>{children}</main>
             </div>
 
-
-            {/* Bottom Navbar*/}
+            {/* Bottom Navbar */}
             {!isLoginPage && !isResetPage && (
                 <div className="fixed bottom-0 left-0 right-0 z-30 bg-indigo-50 border-t border-gray-300 flex justify-around py-1 px-2 shadow-inner">
                     {menuItems.map((item) => {
