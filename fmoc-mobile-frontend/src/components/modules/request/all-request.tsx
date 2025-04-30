@@ -21,14 +21,14 @@ export default function AllRequest() {
         <div className="flex flex-col h-screen w-full max-w-md mx-auto px-4 ">
             <HeroProfile userData={userData} />
 
-            <div className="flex space-x-4 sm:space-x-6 border-b mt-6 overflow-x-auto">
+            <div className="flex text-xs font-medium space-x-4 sm:space-x-6 border-b pt-6 ">
                 {["ongoing", "history"].map((tab) => (
                     <button
                         key={tab}
                         className={`pb-2 ${
                             activeTab === tab
-                                ? "border-b-2 border-primary text-primary"
-                                : "text-neutral-600"
+                                ? "text-blue-600 border-b-2 border-blue-600"
+                                : "ttext-gray-500 border-b-2 border-transparent"
                         }`}
                         onClick={() => setActiveTab(tab as 'ongoing' | 'history')}
                     >

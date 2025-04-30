@@ -21,7 +21,7 @@ export default function HeroProfile({ userData }: Props) {
     return (
         <div>
             <h1 className="text-xl sm:text-2xl font-bold">Hi, {userData?.name}</h1>
-            <p className="text-sm sm:text-base text-neutral-500">Available Balance</p>
+            <p className="text-sm sm:text-base text-neutral-500">Saldo Tersedia</p>
             <p className="text-2xl sm:text-3xl font-extrabold mt-1">
                 {userData?.saldo == null ? '0' : formatCurrency(userData.saldo)}
             </p>

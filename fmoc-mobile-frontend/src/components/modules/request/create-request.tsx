@@ -14,8 +14,8 @@ export default function CreateRequest() {
         <div className="flex flex-col h-screen w-full max-w-md mx-auto px-4">
             <HeroProfile userData={userData} />
 
-            <div className="flex space-x-4 sm:space-x-6 border-b mt-6 overflow-x-auto">
-                <p className="pb-2">Pengajuan Dana</p>
+            <div className="flex space-x-4 sm:space-x-6 border-b mt-6 ">
+                <p className="pb-2 text-xs font-medium text-blue-600 border-b-2 border-blue-600">Pengajuan Dana</p>
                 {loading && <p>Loading...</p>}
 
             </div>

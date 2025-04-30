@@ -182,43 +182,28 @@ export default function FormRequest() {
           </select>
         </div>
 
-        {/* Transaction Date */}
-        <div className="flex flex-col">
-          <p className="text-xs sm:text-sm mt-1 font-semibold">
-            Transaction Date<span className="text-danger">*</span>
-          </p>
-          <Input
-            type="datetime-local"
-            name="transactionDate"
-            value={formData.transactionDate}
-            onChange={handleChange}
-            required
-          />
-        </div>
-
         {/* Bukti Invoice */}
         <div className="flex flex-col">
           <div className="flex justify-between items-center">
             <p className="text-xs sm:text-sm mt-1 font-semibold">
-              Bukti Invoice<span className="text-danger">*</span>
+              Bukti Pengajuan Dana<span className="text-danger">*</span>
             </p>
             <Button className="text-xs sm:text-sm mt-1" type="button" variant="primary" onClick={() => setShowCamera(true)}>
-              Capture Photo
+                Foto
             </Button>
           </div>
-          <div className="bg-accent-base mt-2 p-3 rounded-md flex justify-center">
+          <div className="bg-accent-base mt-2  rounded flex justify-center shadow overflow-hidden">
             {previewInvoice ? (
-              <img
+                <img
                 key={imgKey}
-                src={`data:image/jpeg;base64,${previewInvoice}`}
-                alt="Invoice Preview"
-                width={240}
-                height={80}
-                className="rounded-md"
-              />
+                src={`data:image/jpeg;base64,${previewInvoice}`}// assuming href URL, not base64
+                alt="Image Data"
+                className="w-full h-[200px] object-cover"
+                />
+       
             ) : (
               <div className="w-[240px] h-[80px] flex items-center justify-center text-gray-400">
-                No invoice uploaded
+                Belum Ada Bukti Pengajuan
               </div>
             )}
           </div>
@@ -227,7 +212,7 @@ export default function FormRequest() {
         {/* Submit */}
         <div className="flex justify-end mt-4">
           <Button className="text-xs sm:text-sm mt-1" type="submit" variant="primary" disabled={loading}>
-            {loading ? "Submitting..." : "Submit Request"}
+            {loading ? "Mengajukan..." : "Ajukan Dana"}
           </Button>
         </div>
       </form>
