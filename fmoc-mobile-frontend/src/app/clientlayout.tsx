@@ -55,9 +55,10 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
             )}
 
             {/* Main Content */}
-            <div className={`min-h-screen pt-11 pb-10`}>
-                <main className="flex-grow p-4">{children}</main>
+            <div className={`min-h-screen ${!isLoginPage ? "pt-11 pb-10" : ""}`}>
+                <main className={`${!isLoginPage ? "flex-grow p-4" : ""}`}>{children}</main>
             </div>
+
 
             {/* Bottom Navbar*/}
             {!isLoginPage && !isResetPage && (

@@ -38,7 +38,6 @@ export default function LoginForm() {
             const response = await axios.post(`${apiUrl}/auth/login`, data);
 
             if (response.status === 200) {
-                // Simpan token ke localStorage
                 if (typeof window !== "undefined") {
                     localStorage.setItem("token", response.data.data.token);
 
@@ -74,7 +73,7 @@ export default function LoginForm() {
     return (
         <form
             onSubmit={handleSubmit(onSubmit)}
-            className="space-y-3 max-w-xs w-full mx-auto p-4"
+            className="space-y-3 max-w-xs w-full mx-auto"
         >
             <div>
                 <label className="text-xs font-medium">Email</label>
