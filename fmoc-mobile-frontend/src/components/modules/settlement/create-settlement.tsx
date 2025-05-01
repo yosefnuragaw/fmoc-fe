@@ -1,22 +1,26 @@
 'use client';
 
-import { useState }            from 'react';
+import { useState } from 'react';
 import { Button } from "../../ui/button";
-import { useRouter, useParams }   from 'next/navigation';
-import axios                   from 'axios';
-import { toast }               from 'sonner';
-
-import { useUser }             from '@/components/hooks/useUser';
-import HeroProfile             from '../profile/header';
+import { useRouter, useParams } from 'next/navigation';
+import axios from 'axios';
+import { toast } from 'sonner';
+import { useUser } from '@/components/hooks/useUser';
+import HeroProfile from '../profile/header';
 
 /* ───────────────────────────────────────────────────────── */
 
 export default function CreateSettlement() {
-  const router      = useRouter();
-  const params      = useParams();       // read ?requestDanaId=
-  const { userData, loading: userLoading } = useUser();
+  
+  const router = useRouter();
+  const params = useParams<{ requestDanaId: string }>();
 
   const [posting, setPosting] = useState(false);   // button spinner
+  
+  const { userData, loading: userLoading, error: userError } = useUser()
+  
+  if (userLoading ) return <p className="text-center mt-10">Loading...</p>
+  if (userError ) return <p className="text-red-500 text-center mt-10">{userError }</p>
 
   /* click-handler --------------------------------------------------------- */
     const handleCreate = async () => {
@@ -38,7 +42,7 @@ export default function CreateSettlement() {
 
     if (res.status == 201) {
         toast.success(res.data.message)
-        router.replace(`/settlement/fill/${requestDanaId}`);
+        router.push(`/settlement/detail/${requestDanaId}`);
     } 
 
     else {
@@ -51,25 +55,36 @@ export default function CreateSettlement() {
   return (
     <div className="flex flex-col h-screen w-full max-w-md mx-auto px-4 py-6">
       <HeroProfile userData={userData} />
-
-      <div className="flex space-x-4 border-b mt-6">
-        <p className="pb-2">Laporan Settlement</p>
+      
+      <div className="top-[80px] z-10 border-b mt-2">
+        <div className="flex text-xs font-medium border-b pt-6 px-1 space-x-4">
+          <button 
+              className="pb-2 text-gray-500 border-b-2 border-transparent"
+              onClick={() => router.push(`/home/${params.requestDanaId}`)}
+            >Pengajuan Dana
+          </button>
+          <button className="pb-2 text-blue-600 border-b-2 border-blue-600">Settlement</button>
+        </div>
       </div>
 
-      <div className="flex justify-center mt-4">
-          <Button type="submit" variant="primary" disabled={userLoading || posting} onClick={handleCreate}>
-            {posting ? 'Processing…' : 'Create Settlement'}
-          </Button>
-        </div>
 
-      <div className="flex-1 flex items-center justify-center">
-        <button
-          className="px-6 py-3 rounded-lg bg-primary text-white disabled:opacity-60"
-          disabled={userLoading || posting}
-          onClick={handleCreate}
-        >
-          {posting ? 'Processing…' : 'Create Settlement'}
-        </button>
+      <div className="flex-1 overflow-y-auto pb-12">
+        <div className="flex flex-col gap-3 p-4">
+          <div className="flex justify-center mt-4">
+            <Button type="submit" variant="primary" disabled={userLoading || posting} onClick={handleCreate}>
+              {posting ? 'Processing…' : 'Create Settlement'}
+            </Button>
+          </div>
+
+          <div className="flex-1 flex items-center justify-center">
+            <button
+              className="px-6 py-3 rounded-lg bg-primary text-white disabled:opacity-60"
+              disabled={userLoading || posting}
+              onClick={handleCreate}>
+              {posting ? 'Processing…' : 'Create Settlement'}
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );

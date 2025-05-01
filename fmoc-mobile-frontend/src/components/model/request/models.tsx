@@ -7,7 +7,6 @@ export type RequestDana = {
     submissionDate: string
     settled: boolean;
 }
-<<<<<<< HEAD
 
 export type DetailRequestDana = {
     id: string;               // UUID to string conversion
@@ -24,5 +23,3 @@ export type DetailRequestDana = {
     approved: boolean;
   };
   
-=======
->>>>>>> 20d2eb0f77ba875a72ccaf2ab50593eb449e72cd

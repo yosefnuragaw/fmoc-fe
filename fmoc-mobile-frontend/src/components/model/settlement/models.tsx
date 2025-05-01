@@ -9,4 +9,21 @@ export type SettlementRequest = {
     description: string | null
     buktiPenggunaanDanaImgData: string | null;
   };
+
+  export interface SettlementDetails {
+    id: string;
+    userId: string;
+    category: string;
+    nominal: number;
+    usageNominal: number;
+    description: string;
+    buktiPenggunaanDanaUrl: string;
+    additionalSettlementUrl: string;
+    latitude: number;
+    longitude: number;
+    transactionDate: string;
+    submissionDate: string; 
+    status: string;
+  }
+
   
