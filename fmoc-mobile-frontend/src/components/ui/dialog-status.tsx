@@ -1,5 +1,4 @@
 "use client";
-import React from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
@@ -16,7 +15,7 @@ export default function StatusHistoryPopup({
 }) {
     return (
         <Dialog open={open} onOpenChange={onClose}>
-            <DialogContent className="max-w-md bg-white">
+            <DialogContent className="max-w-md bg-white max-sm:w-5/6 rounded-xl min-w-0">
                 <DialogHeader>
                     <DialogTitle>Riwayat Status</DialogTitle>
                 </DialogHeader>

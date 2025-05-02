@@ -31,7 +31,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
     if (!hasMounted) return null;
 
     const menuItems = [
-        { href: "/", icon: <HiMiniHome size={25} />, label: "Home" },
+        { href: "/home", icon: <HiMiniHome size={25} />, label: "Home" },
         { href: "/request", icon: <HiDocumentPlus size={25} />, label: "Create" },
         { href: "/profile", icon: <HiMiniUser size={25} />, label: "Profile" },
     ];
