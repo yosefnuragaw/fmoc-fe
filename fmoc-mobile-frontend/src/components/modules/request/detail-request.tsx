@@ -2,18 +2,28 @@
 
 import { toast } from "sonner";
 import React, { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import HeroProfile from "@/components/modules/profile/header";
 import { useUser } from "@/components/hooks/useUser";
 import { useDetailRequestDana } from "@/components/hooks/useDetailRequestDana";
 import { cancelRequest } from "@/components/hooks/useCancelRequest";
 
-interface DetailRequestProps {
-  requestId: string;
-}
 
-export default function DetailRequest({ requestId }: DetailRequestProps) {
+export default function DetailRequest() {
+  const  params  = useParams();
   const router = useRouter();
+  const rawId = params.id;
+  if (typeof rawId !== 'string') {
+    // Optional: redirect back or render a fallback while we sort out the param
+    useEffect(() => {
+      router.push('/home');      // or wherever makes sense
+    }, [router]);
+
+    return <p>Loading…</p>;
+  }
+  const requestId = rawId;  
+
+  
   const [activeTab, setActiveTab] = useState<'req' | 'set'>('req');
   const [cancelSuccess, setCancelSuccess] = useState(false);
 
@@ -22,6 +32,8 @@ export default function DetailRequest({ requestId }: DetailRequestProps) {
 
   // Trigger toast and redirect if cancellation succeeded
   useEffect(() => {
+    if (!requestId) return;
+
     if (cancelSuccess) {
       toast.success("Pengajuan dana berhasil dibatalkan");
       router.push("/home");
