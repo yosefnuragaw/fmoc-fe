@@ -5,7 +5,7 @@ export default function manifest(): MetadataRoute.Manifest {
     name: 'F-MOC',
     short_name: 'F-MOC',
     description: 'A Progressive Web App for Field Maintenance Operation Cost',
-    start_url: '/',
+    start_url: '/login',
     display: 'standalone',
     background_color: '#ffffff',
     theme_color: '#000000',
