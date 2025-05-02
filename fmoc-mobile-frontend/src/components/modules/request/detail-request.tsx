@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import { toast } from "sonner";
 import React, { useState, useEffect } from "react";
@@ -7,8 +7,11 @@ import HeroProfile from "@/components/modules/profile/header";
 import { useUser } from "@/components/hooks/useUser";
 import { useDetailRequestDana } from "@/components/hooks/useDetailRequestDana";
 import { cancelRequest } from "@/components/hooks/useCancelRequest";
-import RequestTab from "@/components/ui/request-tab";
-import SettlementTabContent from "@/components/modules/settlement/settlement-tab-content"; 
+import { Button } from "@/components/ui/button";
+import { FaHistory } from "react-icons/fa";
+import StatusHistoryPopup from "@/components/ui/dialog-status";
+
+const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
 interface DetailRequestProps {
   requestId: string;
@@ -18,11 +21,12 @@ export default function DetailRequest({ requestId }: DetailRequestProps) {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<'req' | 'set'>('req');
   const [cancelSuccess, setCancelSuccess] = useState(false);
+  const [statusHistory, setStatusHistory] = useState<any[]>([]);
+  const [isStatusDialogOpen, setIsStatusDialogOpen] = useState(false);
 
   const { userData, loading: userLoading, error: userError } = useUser();
   const { data, loading: dataLoading, error: dataError } = useDetailRequestDana(requestId);
 
-  // Trigger toast and redirect if cancellation succeeded
   useEffect(() => {
     if (cancelSuccess) {
       toast.success("Pengajuan dana berhasil dibatalkan");
@@ -30,9 +34,42 @@ export default function DetailRequest({ requestId }: DetailRequestProps) {
     }
   }, [cancelSuccess, router]);
 
-  // Show loading or error early to avoid conditional hook issues
-  if (userLoading || dataLoading) return <p className="text-center mt-10">Loading...</p>;
-  if (userError || dataError) return <p className="text-red-500 text-center mt-10">{userError || dataError}</p>;
+  useEffect(() => {
+    if (!requestId) return;
+    fetchStatusHistory();
+  }, [requestId]);
+
+  async function fetchStatusHistory() {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(`${apiUrl}/requestdana/approval/history/${requestId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Gagal mengambil riwayat status request");
+      }
+
+      const jsonData = await response.json();
+      const historyData = jsonData.data.map((item: any) => ({
+        status: item.status,
+        time: new Date(item.time).toLocaleString("id-ID", {
+          day: "2-digit",
+          month: "long",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+        }),
+      }));
+      setStatusHistory(historyData);
+    } catch (error) {
+      console.error("Error:", error);
+      toast.error("Terjadi kesalahan saat mengambil riwayat status request");
+    }
+  }
 
   const handleCancel = async () => {
     try {
@@ -43,6 +80,9 @@ export default function DetailRequest({ requestId }: DetailRequestProps) {
     }
   };
 
+  // Move conditionals AFTER all hooks
+  if (userLoading || dataLoading) return <p className="text-center mt-10">Loading...</p>;
+  if (userError || dataError) return <p className="text-red-500 text-center mt-10">{userError || dataError}</p>;
 
   console.log(data)
   return (
@@ -51,6 +91,11 @@ export default function DetailRequest({ requestId }: DetailRequestProps) {
 
       <div className="top-[80px] z-10 border-b mt-2">
         <div className="flex justify-between items-center text-xs font-medium border-b pt-6 px-1">
+        <StatusHistoryPopup
+                open={isStatusDialogOpen}
+                onClose={() => setIsStatusDialogOpen(false)}
+                statusHistory={statusHistory}
+            />
           {/* Tab buttons */}
           <div className="flex space-x-4 sm:space-x-6">
             {["req", ...(data?.approved ? ["set"] : [])].map((tab) => (
@@ -88,11 +133,24 @@ export default function DetailRequest({ requestId }: DetailRequestProps) {
 
       <div className="flex-1 pb-12">
         <div className="flex flex-col gap-3 p-4">
+        <div className="flex">
+                {data?.status.includes("Approved by") && (
+                    <Button className="flex items-center gap-1" variant="outline_success" onClick={() => setIsStatusDialogOpen(true)}><FaHistory /> {data?.status}</Button>
+                )}
+                {data?.status.includes("Pending") && (
+                    <Button className="flex items-center gap-1" variant="outline_warning" onClick={() => setIsStatusDialogOpen(true)}><FaHistory /> {data?.status}</Button>
+                )}
+                {data?.status.includes("Rejected") && (
+                    <Button className="flex items-center gap-1" variant="outline_danger" onClick={() => setIsStatusDialogOpen(true)}><FaHistory /> {data?.status}</Button>
+                )}
+                {data?.status.includes("Transferred") && (
+                    <Button className="flex items-center gap-1" variant="success" onClick={() => setIsStatusDialogOpen(true)}><FaHistory /> {data?.status}</Button>
+                )}
+            </div>
           {[
             { label: "WO", value: data?.wo },
             { label: "Kategori", value: data?.category },
             { label: "Nominal", value: data?.nominal ? `Rp ${data.nominal.toLocaleString("id-ID")}` : "-" },
-            { label: "Status", value: data?.status },
             { label: "Tanggal Pengajuan", value: data?.submissionDate ? new Date(data.submissionDate).toLocaleDateString("id-ID") : "-" },
           ].map((item, index) => (
             <div key={index} className="flex flex-col gap-1 w-full">

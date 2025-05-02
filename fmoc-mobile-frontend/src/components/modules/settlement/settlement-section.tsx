@@ -30,7 +30,6 @@ export default function SettlementSection({ requestDanaId }: Props) {
         );
 
         if (res.status == 200) {
-            toast.success(res.data.message)
             const settlementData: SettlementDetails = res.data.data
             setDetails(settlementData)
 
@@ -59,7 +58,7 @@ export default function SettlementSection({ requestDanaId }: Props) {
     case "created_empty":
       return <FillSettlement />;
     case "filled":
-        return detail ? <DetailSettlement detail={detail} /> : <p>Error: No data</p>;
+        return detail ? <DetailSettlement detail={detail} requestDanaId = {requestDanaId}/> : <p>Error: No data</p>;
     default:
       return <p>Error: Unknown status</p>;
   }

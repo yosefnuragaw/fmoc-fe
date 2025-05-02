@@ -192,31 +192,7 @@ export default function FormSettlement() {
       )}
 
       <form onSubmit={submit} className="flex flex-col gap-5">
-        {/* ===== read-only fields ===== */}
-        
-      <div className="flex flex-col">
-        <p className="text-xs sm:text-sm mt-1 font-semibold">
-            Settlement ID<span className="text-danger">*</span>
-          </p>
-        <Input
-          name="settlementId"
-          value={form.id ?? ''}   // ← null-safe
-          readOnly
-        />
-      </div>
-
-
-      <div className="flex flex-col">
-        <p className="text-xs sm:text-sm mt-1 font-semibold">
-            User ID<span className="text-danger">*</span>
-          </p>
-        <Input
-          name="userId"
-          value={form.userId ?? ''}
-          readOnly
-        />
-      </div>
-
+      
         {/* ===== editable fields ===== */}
         
       <div className="flex flex-col">
