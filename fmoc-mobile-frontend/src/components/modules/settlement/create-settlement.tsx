@@ -41,7 +41,7 @@ export default function CreateSettlement() {
 
     if (res.status == 201) {
         toast.success(res.data.message)
-        router.push(`/settlement/detail/${requestDanaId}`);
+        router.push(`/settlement/${requestDanaId}`);
     } 
 
     else {
