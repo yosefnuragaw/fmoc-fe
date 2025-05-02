@@ -225,7 +225,7 @@ export default function FormSettlement() {
         </div>
 
         <div className="flex flex-col">
-          <label className="text-xs font-semibold">Deskripsi*</label>
+          <label className="text-xs font-semibold">Deskripsi<span className="text-danger">*</span></label>
           <textarea
             name="description"
             className="border rounded-md p-2 bg-accent-base resize-none"
@@ -237,7 +237,7 @@ export default function FormSettlement() {
 
         {/* ====== bukti foto ====== */}
         <div className="flex justify-between items-center">
-          <label className="text-xs font-semibold">Bukti&nbsp;Transaksi*</label>
+          <label className="text-xs font-semibold">Bukti&nbsp;Transaksi<span className="text-danger">*</span></label>
           <Button type="button" variant="primary" className='body-3'
             onClick={() => setShowCam(true)}>
             Capture Photo
@@ -263,7 +263,7 @@ export default function FormSettlement() {
 
         {/* ====== submit ====== */}
         <div className="flex justify-end">
-          <Button variant="primary" type="submit" disabled={posting}>
+          <Button variant="primary" type="submit" disabled={posting} className='body-2'>
             {posting ? 'Submitting…' : 'Submit Settlement'}
           </Button>
         </div>

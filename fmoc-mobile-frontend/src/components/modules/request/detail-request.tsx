@@ -179,7 +179,6 @@ export default function DetailRequest({ requestId }: DetailRequestProps) {
           </div>
           {[
             { label: "WO", value: data?.wo },
-            { label: "Tanggal Transaksi", value: data?.submissionDate ? new Date(data?.submissionDate).toLocaleDateString("id-ID") : "-" },
             { label: "Kategori", value: data?.category },
             { label: "Nominal", value: data?.nominal ? `Rp ${data.nominal.toLocaleString("id-ID")}` : "-" },
             { label: "Tanggal Pengajuan", value: data?.submissionDate ? new Date(data.submissionDate).toLocaleDateString("id-ID") : "-" },
