@@ -100,7 +100,6 @@ const UserProfileComponent: React.FC = () => {
                         'Content-Type': 'application/json',
                     },
                 });
-                console.log("hai: ", transactionResp.data);
                 if (transactionResp.data.status != 200) throw new Error("Failed to fetch user transaction");
 
                 setTransactions(transactionResp.data.data ?? []);
