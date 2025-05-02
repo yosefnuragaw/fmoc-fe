@@ -80,32 +80,29 @@ export default function DetailRequest({ requestId }: DetailRequestProps) {
     }
   };
 
-  // Move conditionals AFTER all hooks
   if (userLoading || dataLoading) return <p className="text-center mt-10">Loading...</p>;
   if (userError || dataError) return <p className="text-red-500 text-center mt-10">{userError || dataError}</p>;
 
-  console.log(data)
   return (
     <div className="flex flex-col h-screen w-full max-w-md mx-auto px-4">
       <HeroProfile userData={userData} />
 
       <div className="top-[80px] z-10 border-b mt-2">
         <div className="flex justify-between items-center text-xs font-medium border-b pt-6 px-1">
-        <StatusHistoryPopup
-                open={isStatusDialogOpen}
-                onClose={() => setIsStatusDialogOpen(false)}
-                statusHistory={statusHistory}
-            />
+          <StatusHistoryPopup
+            open={isStatusDialogOpen}
+            onClose={() => setIsStatusDialogOpen(false)}
+            statusHistory={statusHistory}
+          />
           {/* Tab buttons */}
           <div className="flex space-x-4 sm:space-x-6">
             {["req", ...(data?.approved ? ["set"] : [])].map((tab) => (
               <button
                 key={tab}
-                className={`pb-2 ${
-                  activeTab === tab
-                    ? "text-blue-600 border-b-2 border-blue-600"
-                    : "text-gray-500 border-b-2 border-transparent"
-                }`}
+                className={`pb-2 ${activeTab === tab
+                  ? "text-blue-600 border-b-2 border-blue-600"
+                  : "text-gray-500 border-b-2 border-transparent"
+                  }`}
                 onClick={() => {
                   if (tab === "set") {
                     router.push(`/settlement/${requestId}`);
@@ -133,20 +130,53 @@ export default function DetailRequest({ requestId }: DetailRequestProps) {
 
       <div className="flex-1 pb-12">
         <div className="flex flex-col gap-3 p-4">
-        <div className="flex">
-                {data?.status.includes("Approved by") && (
-                    <Button className="flex items-center gap-1" variant="outline_success" onClick={() => setIsStatusDialogOpen(true)}><FaHistory /> {data?.status}</Button>
-                )}
-                {data?.status.includes("Pending") && (
-                    <Button className="flex items-center gap-1" variant="outline_warning" onClick={() => setIsStatusDialogOpen(true)}><FaHistory /> {data?.status}</Button>
-                )}
-                {data?.status.includes("Rejected") && (
-                    <Button className="flex items-center gap-1" variant="outline_danger" onClick={() => setIsStatusDialogOpen(true)}><FaHistory /> {data?.status}</Button>
-                )}
-                {data?.status.includes("Transferred") && (
-                    <Button className="flex items-center gap-1" variant="success" onClick={() => setIsStatusDialogOpen(true)}><FaHistory /> {data?.status}</Button>
-                )}
-            </div>
+          <div className="flex">
+            {(data?.status.includes("Transferred") || data?.status.includes("Reimbursed")) && (
+              <Button
+                className="flex items-center gap-1 border-success text-success w-full justify-center body-2"
+                variant="outline_success"
+                onClick={() => setIsStatusDialogOpen(true)}
+              >
+                <FaHistory /> {data?.status}
+              </Button>
+            )}
+            {(data?.status.includes("Approved by")) && (
+              <Button
+                className="flex items-center gap-1 border-success text-success w-full justify-center body-2"
+                variant="outline_success"
+                onClick={() => setIsStatusDialogOpen(true)}
+              >
+                <FaHistory /> {data?.status}
+              </Button>
+            )}
+            {data?.status.includes("approval from") || data?.status.includes("Waiting") && (
+              <Button
+                className="flex items-center gap-1 border-warning text-warning w-full justify-center body-2"
+                variant="outline_warning"
+                onClick={() => setIsStatusDialogOpen(true)}
+              >
+                <FaHistory /> {data?.status}
+              </Button>
+            )}
+            {data?.status.includes("Rejected") && (
+              <Button
+                className="flex items-center gap-1 border-destructive text-destructive w-full justify-center body-2"
+                variant="outline_danger"
+                onClick={() => setIsStatusDialogOpen(true)}
+              >
+                <FaHistory /> {data?.status}
+              </Button>
+            )}
+            {data?.status.includes("Pending") && !data?.status.includes("approval") && (
+              <Button
+                className="flex items-center gap-1 border-destructive text-destructive w-full justify-center body-2"
+                variant="status_accent"
+                onClick={() => setIsStatusDialogOpen(true)}
+              >
+                <FaHistory /> {data?.status}
+              </Button>
+            )}
+          </div>
           {[
             { label: "WO", value: data?.wo },
             { label: "Kategori", value: data?.category },

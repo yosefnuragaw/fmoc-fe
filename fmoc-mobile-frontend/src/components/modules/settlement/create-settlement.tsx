@@ -55,7 +55,7 @@ export default function CreateSettlement() {
       <div className="flex-1 overflow-y-auto pb-12">
         <div className="flex flex-col gap-3 p-4">
           <div className="flex justify-center mt-4">
-            <Button type="submit" variant="primary" disabled={userLoading || posting} onClick={handleCreate}>
+            <Button type="submit" variant="primary" disabled={userLoading || posting} onClick={handleCreate} className='body-2'>
               {posting ? 'Processing…' : 'Create Settlement'}
             </Button>
           </div>
