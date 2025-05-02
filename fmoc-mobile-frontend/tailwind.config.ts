@@ -148,6 +148,7 @@ export default {
 				},
 			});
 		},
-		require("tailwindcss-animate")
+		require("tailwindcss-animate"),
+		require("tailwind-scrollbar-hide")
 	],
 } satisfies Config;

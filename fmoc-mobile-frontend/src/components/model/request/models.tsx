@@ -14,6 +14,7 @@ export type DetailRequestDana = {
     userId: string;          // UUID to string conversion
     nominal: number;
     imgData: string;
+    imgDisbursement: string;
     latitude: number;
     longitude: number;
     submissionDate: string;  // or Date, depending on how you process it
