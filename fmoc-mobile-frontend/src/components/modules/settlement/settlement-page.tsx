@@ -1,66 +1,33 @@
-"use client";
-import { useEffect, useState } from "react";
-import { useRouter }   from 'next/navigation';
-import { toast } from 'sonner';
-import CreateSettlement from "@/components/modules/settlement/create-settlement";
-import FillSettlement from "@/components/modules/settlement/fill-settlement";
-import DetailSettlement from "@/components/modules/settlement/detail-settlement";
-import type { SettlementDetails } from "@/components/model/settlement/models";
-import axios from 'axios';
+'use client';
 
-interface Props {
-    requestDanaId: string;
-}
+import SettlementSection from "@/components/modules/settlement/settlement-section";
+import { useUser } from '@/components/hooks/useUser';
+import RequestTab from '@/components/ui/request-tab';
+import HeroProfile from '../profile/header';
 
-export default function SettlementPage({ requestDanaId }: Props) {
-  const router = useRouter();
-  const [status, setStatus] = useState<"loading" | "not_created" | "created_empty" | "filled">("loading");
-  const [detail, setDetails] = useState<SettlementDetails | null>(null);
+export default function SettlementPage({ requestDanaId }: { requestDanaId: string }) {
 
-  useEffect(() => {
-    (async () => {
-        const token = localStorage.getItem('token');
-        if (!token) throw new Error('Not logged in');
+  
+  const { userData, loading: userLoading, error: userError } = useUser()
+  
+  if (userLoading ) return <p className="text-center mt-10">Loading...</p>
+  if (userError ) return <p className="text-red-500 text-center mt-10">{userError }</p>
 
-        const res = await axios.get(
-            `${process.env.NEXT_PUBLIC_API_URL}/settlement/manage/detail/${requestDanaId}`,
-                { headers: {Authorization: `Bearer ${token}`, 'Content-Type': 'application/json'},
-                    validateStatus: () => true
-                }
-        );
+  return (
+    <div className="flex flex-col h-screen w-full max-w-md mx-auto px-4">
+        <HeroProfile userData={userData} />
 
-        if (res.status == 200) {
-            toast.success(res.data.message)
-            const settlementData: SettlementDetails = res.data
-            setDetails(settlementData)
+        <div className="top-[80px] z-10 border-b mt-2">
+            <div className="flex justify-between items-center text-xs font-medium border-b pt-6 px-1">
+          
+              {/* request tab */}
+              <RequestTab requestDanaId={requestDanaId} />
+          
+            </div>
+        </div>
 
-            const isFilled = res.data.data.status !== "NOT FILLED";
-            setStatus(isFilled ? "filled" : "created_empty");
-            
-        }
+          <SettlementSection requestDanaId={requestDanaId} />
 
-        else if (res.status == 204) {
-            setStatus("not_created")
-        }
-
-        else {
-            toast.error(res.data.message)
-            router.push(`/home/${requestDanaId}`)
-        }
-
-    })();
-  }, [requestDanaId, router]);
-
-  if (status === "loading") return <p>Loading...</p>;
-
-  switch (status) {
-    case "not_created":
-      return <CreateSettlement />;
-    case "created_empty":
-      return <FillSettlement />;
-    case "filled":
-        return detail ? <DetailSettlement detail={detail} /> : <p>Error: No data</p>;
-    default:
-      return <p>Error: Unknown status</p>;
-  }
+    </div>
+  );
 }

@@ -7,6 +7,8 @@ import HeroProfile from "@/components/modules/profile/header";
 import { useUser } from "@/components/hooks/useUser";
 import { useDetailRequestDana } from "@/components/hooks/useDetailRequestDana";
 import { cancelRequest } from "@/components/hooks/useCancelRequest";
+import RequestTab from "@/components/ui/request-tab";
+import SettlementTabContent from "@/components/modules/settlement/settlement-tab-content"; 
 
 interface DetailRequestProps {
   requestId: string;
@@ -49,7 +51,7 @@ export default function DetailRequest({ requestId }: DetailRequestProps) {
         <div className="flex justify-between items-center text-xs font-medium border-b pt-6 px-1">
           {/* Tab buttons */}
           <div className="flex space-x-4 sm:space-x-6">
-            {["req", ...(data?.end ? ["set"] : [])].map((tab) => (
+            {["req", ...(data?.approved ? ["set"] : [])].map((tab) => (
               <button
                 key={tab}
                 className={`pb-2 ${
@@ -57,7 +59,13 @@ export default function DetailRequest({ requestId }: DetailRequestProps) {
                     ? "text-blue-600 border-b-2 border-blue-600"
                     : "text-gray-500 border-b-2 border-transparent"
                 }`}
-                onClick={() => setActiveTab(tab as 'req' | 'set')}
+                onClick={() => {
+                  if (tab === "set") {
+                    router.push(`/settlement/${requestId}`);
+                  } else {
+                    setActiveTab("req");
+                  }
+                }}
               >
                 {tab === "req" ? "Pengajuan Dana" : "Settlement"}
               </button>

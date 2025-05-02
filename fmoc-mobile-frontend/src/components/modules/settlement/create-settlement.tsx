@@ -6,7 +6,6 @@ import { useRouter, useParams } from 'next/navigation';
 import axios from 'axios';
 import { toast } from 'sonner';
 import { useUser } from '@/components/hooks/useUser';
-import HeroProfile from '../profile/header';
 
 /* ───────────────────────────────────────────────────────── */
 
@@ -53,21 +52,6 @@ export default function CreateSettlement() {
 
   /* ─────────────── render ─────────────── */
   return (
-    <div className="flex flex-col h-screen w-full max-w-md mx-auto px-4 py-6">
-      <HeroProfile userData={userData} />
-      
-      <div className="top-[80px] z-10 border-b mt-2">
-        <div className="flex text-xs font-medium border-b pt-6 px-1 space-x-4">
-          <button 
-              className="pb-2 text-gray-500 border-b-2 border-transparent"
-              onClick={() => router.push(`/home/${params.requestDanaId}`)}
-            >Pengajuan Dana
-          </button>
-          <button className="pb-2 text-blue-600 border-b-2 border-blue-600">Settlement</button>
-        </div>
-      </div>
-
-
       <div className="flex-1 overflow-y-auto pb-12">
         <div className="flex flex-col gap-3 p-4">
           <div className="flex justify-center mt-4">
@@ -86,6 +70,5 @@ export default function CreateSettlement() {
           </div>
         </div>
       </div>
-    </div>
   );
 }
