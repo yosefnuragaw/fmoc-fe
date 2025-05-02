@@ -40,7 +40,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
         <>
             {/* Upper Navbar */}
             {!isLoginPage && !isResetPage && (
-                <div className="w-full fixed top-0 left-0 right-0 bg-white shadow z-30 flex justify-between items-center px-4 py-2">
+                <div className="w-full fixed top-0 left-0 right-0 bg-white shadow z-30 flex justify-between items-center px-4 py-2 scrollbar-hide ">
                     <Image
                         src="/images/FMOC-logo.png"
                         alt="FMOC Logo"
@@ -55,14 +55,14 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
             )}
 
             {/* Main Content */}
-            <div className={`min-h-screen ${!isLoginPage ? "pt-11 pb-10" : ""}`}>
+            <div className={`min-h-screen scrollbar-hide ${!isLoginPage ? "pt-11 pb-10" : ""}`}>
                 <main className={`${!isLoginPage ? "flex-grow p-4" : ""}`}>{children}</main>
             </div>
 
 
             {/* Bottom Navbar*/}
             {!isLoginPage && !isResetPage && (
-                <div className="fixed bottom-0 left-0 right-0 z-30 bg-indigo-50 border-t border-gray-300 flex justify-around py-1 px-2 shadow-inner">
+                <div className="fixed bottom-0 left-0 right-0 z-30 bg-indigo-50 border-t border-gray-300 flex justify-around py-1 px-2 shadow-inner scrollbar-hide ">
                     {menuItems.map((item) => {
                         const isActive = pathname === item.href;
                         return (

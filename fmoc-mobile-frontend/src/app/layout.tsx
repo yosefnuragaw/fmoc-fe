@@ -18,8 +18,8 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${poppins.variable} antialiased bg-[#F7F9FB]`}>
         {/* navbar */}
-        <div className="min-h-screen">
-          <main className="flex-grow">
+        <div className="min-h-screen hide-scrollbar">
+          <main className="flex-grow ">
             <ClientLayout>{children}</ClientLayout>
           </main>
         </div>
