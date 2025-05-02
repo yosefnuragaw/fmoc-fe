@@ -1,4 +1,5 @@
 // app/home/[id]/page.tsx
+"use client";
 
 import React from "react";
 import DetailRequest from "@/components/modules/request/detail-request";
