@@ -15,14 +15,14 @@ docker-build:
     - docker:24.0.7-dind
   script:
     - cd "$CI_PROJECT_DIR"
-    - cd fmoc-fe-mobile
+    - cd fmoc-mobile-frontend
     - echo "Building Docker Image..."
     - docker build --build-arg  NEXT_PUBLIC_API_URL="$NEXT_PUBLIC_API_URL" -t $IMAGE_NAME . --file Dockerfile 
     - echo "Saving Docker Image..."
     - docker save -o image.tar $IMAGE_NAME
   artifacts:
     paths:
-      - fmoc-fe-mobile/image.tar
+      - fmoc-mobile-frontend/image.tar
     expire_in: 1 day
   rules:
     - when: always
@@ -36,7 +36,7 @@ docker-push:
     - docker-build
   script:
     - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-    - docker load -i fmoc-fe-mobile/image.tar
+    - docker load -i fmoc-mobile-frontend/image.tar
     - docker push $IMAGE_NAME
 
 deploy-staging:
