@@ -4,10 +4,22 @@ import SettlementSection from "@/components/modules/settlement/settlement-sectio
 import { useUser } from '@/components/hooks/useUser';
 import RequestTab from '@/components/ui/request-tab';
 import HeroProfile from '../profile/header';
+import { useParams, useRouter } from "next/navigation";
+import { useEffect } from "react";
 
-export default function SettlementPage({ requestDanaId }: { requestDanaId: string }) {
-
+export default function SettlementPage() {
+  const  params  = useParams();
+  const router = useRouter();
+  const rawId = params.id;
+  if (typeof rawId !== 'string') {
+      // Optional: redirect back or render a fallback while we sort out the param
+      useEffect(() => {
+        router.push('/home');      // or wherever makes sense
+      }, [router]);
   
+      return <p>Loading…</p>;
+    }
+    const requestDanaId = rawId; 
   const { userData, loading: userLoading, error: userError } = useUser()
   
   if (userLoading ) return <p className="text-center mt-10">Loading...</p>
