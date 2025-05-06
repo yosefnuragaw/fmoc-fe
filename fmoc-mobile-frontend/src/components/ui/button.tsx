@@ -12,7 +12,12 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
     | "outline_accent"
     | "outline_warning"
     | "outline_danger"
-    | "outline_cancel";
+    | "outline_cancel"
+    | "status_accent"
+    | "status_warning"
+    | "status_danger"
+    | "status_cancel"
+    | "status_success";
 }
 
 export function Button({ variant = "primary", className, ...props }: ButtonProps) {
@@ -27,7 +32,12 @@ export function Button({ variant = "primary", className, ...props }: ButtonProps
     outline_accent: "bg-[var(--accent-base)] border-2 border-[var(--accent)] text-[var(--accent)]",
     outline_warning: "bg-[var(--warning-base)] border-2 border-[var(--warning)] text-[var(--warning)]",
     outline_danger: "bg-[var(--danger-base)] border-2 border-[var(--danger)] text-[var(--danger)]",
-    outline_cancel: "bg-white border-2 border-[var(--neutral)] text-[var(--neutral)]"
+    outline_cancel: "bg-white border-2 border-[var(--neutral)] text-[var(--neutral)]",
+    status_accent: "bg-[var(--accent-base)] text-[var(--accent)]",
+    status_warning: "bg-[var(--warning-base)] text-[var(--warning)] border-[var(--warning)]",
+    status_danger: "bg-[var(--danger-base)] text-[var(--danger)]",
+    status_cancel: "bg-white text-[var(--neutral)]",
+    status_success: "bg-[var(--success-base)] text-[var(--success)]",
   };
 
   return (

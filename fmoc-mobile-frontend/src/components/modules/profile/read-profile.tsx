@@ -45,15 +45,21 @@ const UserProfileComponent: React.FC = () => {
         return parts.length > 0 ? parts.join(" - ") : "-";
     };
 
-    const formatCurrency = (value: string | null) => {
-        const number = Number(value);
-        if (isNaN(number)) return "-";
+    const formatCurrency = (value: number | null): string => {
+        if (value == null) {
+          return "–";
+        }
+      
+        if (isNaN(value)) {
+          return "–";
+        }
+      
         return new Intl.NumberFormat("id-ID", {
-            style: "currency",
-            currency: "IDR",
-            minimumFractionDigits: 0,
-        }).format(number);
-    };
+          style: "currency",
+          currency: "IDR",
+          minimumFractionDigits: 0,
+        }).format(value);
+      };
 
     const formatValue = (value: string | null) => (value ? value : "-");
 
@@ -100,7 +106,6 @@ const UserProfileComponent: React.FC = () => {
                         'Content-Type': 'application/json',
                     },
                 });
-                console.log("hai: ", transactionResp.data);
                 if (transactionResp.data.status != 200) throw new Error("Failed to fetch user transaction");
 
                 setTransactions(transactionResp.data.data ?? []);
