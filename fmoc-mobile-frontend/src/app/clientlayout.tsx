@@ -1,11 +1,17 @@
 "use client";
 
+<<<<<<< HEAD
 import { useEffect, useState } from "react";
+=======
+import { useEffect } from "react";
+import Image from "next/image";
+>>>>>>> b89d1bcbebb7e42090f8d319c54cdb3d04552c8c
 import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
 import { HiMiniHome, HiDocumentPlus, HiMiniUser } from "react-icons/hi2";
 
 export default function ClientLayout({ children }: { children: React.ReactNode }) {
+<<<<<<< HEAD
     const [hasMounted, setHasMounted] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [userName, setUserName] = useState<string | null>(null);
@@ -29,6 +35,20 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
     }, []);
 
     if (!hasMounted) return null;
+=======
+    const { isLoading, isLoginPage, isResetPage, isAuthenticated } = useAuth();
+    const pathname = usePathname();
+    const router = useRouter();
+
+    // Redirect to /login if not authenticated and not already on login/reset
+    useEffect(() => {
+        if (!isLoading && !isAuthenticated && !isLoginPage && !isResetPage) {
+            router.replace("/login");
+        }
+    }, [isLoading, isAuthenticated, isLoginPage, isResetPage, router]);
+
+    if (isLoading) return null;
+>>>>>>> b89d1bcbebb7e42090f8d319c54cdb3d04552c8c
 
     const menuItems = [
         { href: "/home", icon: <HiMiniHome size={25} />, label: "Home" },
@@ -40,7 +60,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
         <>
             {/* Upper Navbar */}
             {!isLoginPage && !isResetPage && (
-                <div className="w-full fixed top-0 left-0 right-0 bg-white shadow z-30 flex justify-between items-center px-4 py-2 scrollbar-hide ">
+                <div className="w-full fixed top-0 left-0 right-0 bg-white shadow z-30 flex justify-between items-center px-4 py-2 scrollbar-hide">
                     <Image
                         src="/images/FMOC-logo.png"
                         alt="FMOC Logo"
@@ -62,16 +82,16 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
 
             {/* Bottom Navbar*/}
             {!isLoginPage && !isResetPage && (
-                <div className="fixed bottom-0 left-0 right-0 z-30 bg-indigo-50 border-t border-gray-300 flex justify-around py-1 px-2 shadow-inner scrollbar-hide ">
+                <div className="fixed bottom-0 left-0 right-0 z-30 bg-indigo-50 border-t border-gray-300 flex justify-around py-1 px-2 shadow-inner scrollbar-hide">
                     {menuItems.map((item) => {
                         const isActive = pathname === item.href;
                         return (
                             <button
                                 key={item.href}
                                 onClick={() => router.push(item.href)}
-                                className={`flex flex-col items-center px-3 py-1 rounded-full transition
-                                    ${isActive ? "text-approved bg-approved-base" : "text-neutral-400"
-                                    }`}
+                                className={`flex flex-col items-center px-3 py-1 rounded-full transition ${
+                                    isActive ? "text-approved bg-approved-base" : "text-neutral-400"
+                                }`}
                             >
                                 {item.icon}
                             </button>

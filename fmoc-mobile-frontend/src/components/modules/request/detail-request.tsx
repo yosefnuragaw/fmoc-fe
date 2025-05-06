@@ -2,7 +2,7 @@
 
 import { toast } from "sonner";
 import React, { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import HeroProfile from "@/components/modules/profile/header";
 import { useUser } from "@/components/hooks/useUser";
 import { useDetailRequestDana } from "@/components/hooks/useDetailRequestDana";
@@ -13,12 +13,22 @@ import StatusHistoryPopup from "@/components/ui/dialog-status";
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
-interface DetailRequestProps {
-  requestId: string;
-}
 
-export default function DetailRequest({ requestId }: DetailRequestProps) {
+export default function DetailRequest() {
+  const  params  = useParams();
   const router = useRouter();
+  const rawId = params.id;
+  if (typeof rawId !== 'string') {
+    // Optional: redirect back or render a fallback while we sort out the param
+    useEffect(() => {
+      router.push('/home');      // or wherever makes sense
+    }, [router]);
+
+    return <p>Loading…</p>;
+  }
+  const requestId = rawId;  
+
+  
   const [activeTab, setActiveTab] = useState<'req' | 'set'>('req');
   const [cancelSuccess, setCancelSuccess] = useState(false);
   const [statusHistory, setStatusHistory] = useState<any[]>([]);
@@ -28,6 +38,8 @@ export default function DetailRequest({ requestId }: DetailRequestProps) {
   const { data, loading: dataLoading, error: dataError } = useDetailRequestDana(requestId);
 
   useEffect(() => {
+    if (!requestId) return;
+
     if (cancelSuccess) {
       toast.success("Pengajuan dana berhasil dibatalkan");
       router.push("/home");

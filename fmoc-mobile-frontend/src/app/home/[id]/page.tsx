@@ -1,5 +1,13 @@
-import DetailRequest from "@/components/modules/request/detail-request"
+// app/home/[id]/page.tsx
+"use client";
 
-export default async function RequestPage({ params }: { params: { id: string } }) {
-  return <DetailRequest requestId={params.id} />
+import React from "react";
+import DetailRequest from "@/components/modules/request/detail-request";
+
+ const RequestPage = () => {
+    return (
+        <DetailRequest />
+    );
 }
+
+export default RequestPage;
