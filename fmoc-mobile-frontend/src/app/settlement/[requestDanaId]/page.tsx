@@ -1,5 +1,14 @@
+import { type FC } from "react";
 import SettlementPage from "@/components/modules/settlement/settlement-page";
 
-export default function Page({ params }: { params: { requestDanaId: string } }) {
-  return <SettlementPage requestDanaId={params.requestDanaId} />;
+interface PageProps {
+  params: {
+    requestDanaId: string;
+  };
 }
+
+const Page: FC<PageProps> = ({ params }) => {
+  return <SettlementPage requestDanaId={params.requestDanaId} />;
+};
+
+export default Page;
