@@ -12,16 +12,16 @@ import DetailRequest from "@/components/modules/request/detail-request";
 
 export default RequestPage;
 
-// app/home/[id]/page.tsx
-"use client";
+// // app/home/[id]/page.tsx
+// "use client";
 
-import React from "react";
-import DetailRequest from "@/components/modules/request/detail-request";
+// import React from "react";
+// import DetailRequest from "@/components/modules/request/detail-request";
 
- const RequestPage = () => {
-    return (
-        <DetailRequest />
-    );
-}
+//  const RequestPage = () => {
+//     return (
+//         <DetailRequest />
+//     );
+// }
 
-export default RequestPage;
+// export default RequestPage;
