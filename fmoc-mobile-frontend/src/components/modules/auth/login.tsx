@@ -57,7 +57,7 @@ export default function LoginForm() {
                     localStorage.setItem("name", userData.name);
                     window.dispatchEvent(new Event("authChange"));
                 }
-                router.replace("/profile");
+                router.replace("/home");
             }
         } catch (error) {
             if (axios.isAxiosError(error)) {
