@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import { toast } from "sonner";
 import React, { useState, useEffect } from "react";
@@ -7,6 +7,11 @@ import HeroProfile from "@/components/modules/profile/header";
 import { useUser } from "@/components/hooks/useUser";
 import { useDetailRequestDana } from "@/components/hooks/useDetailRequestDana";
 import { cancelRequest } from "@/components/hooks/useCancelRequest";
+import { Button } from "@/components/ui/button";
+import { FaHistory } from "react-icons/fa";
+import StatusHistoryPopup from "@/components/ui/dialog-status";
+
+const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
 
 export default function DetailRequest() {
@@ -26,11 +31,12 @@ export default function DetailRequest() {
   
   const [activeTab, setActiveTab] = useState<'req' | 'set'>('req');
   const [cancelSuccess, setCancelSuccess] = useState(false);
+  const [statusHistory, setStatusHistory] = useState<any[]>([]);
+  const [isStatusDialogOpen, setIsStatusDialogOpen] = useState(false);
 
   const { userData, loading: userLoading, error: userError } = useUser();
   const { data, loading: dataLoading, error: dataError } = useDetailRequestDana(requestId);
 
-  // Trigger toast and redirect if cancellation succeeded
   useEffect(() => {
     if (!requestId) return;
 
@@ -40,9 +46,42 @@ export default function DetailRequest() {
     }
   }, [cancelSuccess, router]);
 
-  // Show loading or error early to avoid conditional hook issues
-  if (userLoading || dataLoading) return <p className="text-center mt-10">Loading...</p>;
-  if (userError || dataError) return <p className="text-red-500 text-center mt-10">{userError || dataError}</p>;
+  useEffect(() => {
+    if (!requestId) return;
+    fetchStatusHistory();
+  }, [requestId]);
+
+  async function fetchStatusHistory() {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(`${apiUrl}/requestdana/approval/history/${requestId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Gagal mengambil riwayat status request");
+      }
+
+      const jsonData = await response.json();
+      const historyData = jsonData.data.map((item: any) => ({
+        status: item.status,
+        time: new Date(item.time).toLocaleString("id-ID", {
+          day: "2-digit",
+          month: "long",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+        }),
+      }));
+      setStatusHistory(historyData);
+    } catch (error) {
+      console.error("Error:", error);
+      toast.error("Terjadi kesalahan saat mengambil riwayat status request");
+    }
+  }
 
   const handleCancel = async () => {
     try {
@@ -53,25 +92,36 @@ export default function DetailRequest() {
     }
   };
 
+  if (userLoading || dataLoading) return <p className="text-center mt-10">Loading...</p>;
+  if (userError || dataError) return <p className="text-red-500 text-center mt-10">{userError || dataError}</p>;
 
-  console.log(data)
   return (
     <div className="flex flex-col h-screen w-full max-w-md mx-auto px-4">
       <HeroProfile userData={userData} />
 
       <div className="top-[80px] z-10 border-b mt-2">
         <div className="flex justify-between items-center text-xs font-medium border-b pt-6 px-1">
+          <StatusHistoryPopup
+            open={isStatusDialogOpen}
+            onClose={() => setIsStatusDialogOpen(false)}
+            statusHistory={statusHistory}
+          />
           {/* Tab buttons */}
           <div className="flex space-x-4 sm:space-x-6">
             {["req", ...(data?.approved ? ["set"] : [])].map((tab) => (
               <button
                 key={tab}
-                className={`pb-2 ${
-                  activeTab === tab
-                    ? "text-blue-600 border-b-2 border-blue-600"
-                    : "text-gray-500 border-b-2 border-transparent"
-                }`}
-                onClick={() => setActiveTab(tab as 'req' | 'set')}
+                className={`pb-2 ${activeTab === tab
+                  ? "text-blue-600 border-b-2 border-blue-600"
+                  : "text-gray-500 border-b-2 border-transparent"
+                  }`}
+                onClick={() => {
+                  if (tab === "set") {
+                    router.push(`/settlement/${requestId}`);
+                  } else {
+                    setActiveTab("req");
+                  }
+                }}
               >
                 {tab === "req" ? "Pengajuan Dana" : "Settlement"}
               </button>
@@ -92,11 +142,57 @@ export default function DetailRequest() {
 
       <div className="flex-1 pb-12">
         <div className="flex flex-col gap-3 p-4">
+          <div className="flex">
+            {(data?.status.includes("Transferred") || data?.status.includes("Reimbursed")) && (
+              <Button
+                className="flex items-center gap-1 border-success text-success w-full justify-center body-2"
+                variant="outline_success"
+                onClick={() => setIsStatusDialogOpen(true)}
+              >
+                <FaHistory /> {data?.status}
+              </Button>
+            )}
+            {(data?.status.includes("Approved by")) && (
+              <Button
+                className="flex items-center gap-1 border-success text-success w-full justify-center body-2"
+                variant="outline_success"
+                onClick={() => setIsStatusDialogOpen(true)}
+              >
+                <FaHistory /> {data?.status}
+              </Button>
+            )}
+            {data?.status.includes("approval from") || data?.status.includes("Waiting") && (
+              <Button
+                className="flex items-center gap-1 border-warning text-warning w-full justify-center body-2"
+                variant="outline_warning"
+                onClick={() => setIsStatusDialogOpen(true)}
+              >
+                <FaHistory /> {data?.status}
+              </Button>
+            )}
+            {data?.status.includes("Rejected") && (
+              <Button
+                className="flex items-center gap-1 border-destructive text-destructive w-full justify-center body-2"
+                variant="outline_danger"
+                onClick={() => setIsStatusDialogOpen(true)}
+              >
+                <FaHistory /> {data?.status}
+              </Button>
+            )}
+            {data?.status.includes("Pending") && !data?.status.includes("approval") && (
+              <Button
+                className="flex items-center gap-1 border-destructive text-destructive w-full justify-center body-2"
+                variant="status_accent"
+                onClick={() => setIsStatusDialogOpen(true)}
+              >
+                <FaHistory /> {data?.status}
+              </Button>
+            )}
+          </div>
           {[
             { label: "WO", value: data?.wo },
             { label: "Kategori", value: data?.category },
             { label: "Nominal", value: data?.nominal ? `Rp ${data.nominal.toLocaleString("id-ID")}` : "-" },
-            { label: "Status", value: data?.status },
             { label: "Tanggal Pengajuan", value: data?.submissionDate ? new Date(data.submissionDate).toLocaleDateString("id-ID") : "-" },
           ].map((item, index) => (
             <div key={index} className="flex flex-col gap-1 w-full">
