@@ -8,7 +8,7 @@ import axios from "axios";
 import { toast } from "sonner";
 import CameraCapture from "@/components/cam/camera-capture";
 
-const categories = { BBMMobil: 0, BBMMotor: 1, Parkir: 3, Toll: 2 } as const;
+const categories = { BBMMobil: 0, BBMMotor: 1, Parkir: 2, Toll: 3 } as const;
 type CategoryType = keyof typeof categories;
 const initialFormData = {
   wo: "",
@@ -127,7 +127,7 @@ export default function FormRequest() {
       setPreviewInvoice(null);
     } catch (error) {
       console.error(error);
-      toast.error("Gagal mengajukan pengajuan dana.");
+      toast.error("Masih terdapat pengajuan dana untuk kategori "+formData.category);
     } finally {
       setLoading(false);
     }

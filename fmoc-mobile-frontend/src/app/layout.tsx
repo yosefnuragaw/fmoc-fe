@@ -16,6 +16,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <link rel="manifest" href="/manifest.json" />
+      </head>
       <body className={`${poppins.variable} antialiased bg-[#F7F9FB]`}>
         {/* navbar */}
         <div className="min-h-screen hide-scrollbar">

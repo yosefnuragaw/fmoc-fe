@@ -19,12 +19,15 @@ export function useAuth() {
         const name = localStorage.getItem("name");
 
         if (!token && !isLoginPage && !isResetPage) {
-            router.push("/login");
+            router.replace("/login");
         } else {
             setUserName(name);
-            setIsLoading(false);
         }
-    }, []);
 
-    return { isLoading, userName, isLoginPage, isResetPage };
+        setIsLoading(false); // ✅ Always stop loading
+    }, [isLoginPage, isResetPage, router]);
+
+    const isAuthenticated = !!userName;
+
+    return { isLoading, userName, isAuthenticated, isLoginPage, isResetPage };
 }
