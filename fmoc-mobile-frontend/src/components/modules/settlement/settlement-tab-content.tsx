@@ -59,9 +59,9 @@ export default function SettlementTabContent({ requestDanaId }: { requestDanaId:
     case "not_created":
       return <CreateSettlement />;
     case "created_empty":
-      return detail ? <FillSettlement detail={detail} /> : <p>Error: No data</p>;
+      return detail ? <FillSettlement {...({ detail } as any)} /> : <p>Error: No data</p>;
     case "filled":
-      return detail ? <DetailSettlement detail={detail} /> : <p>Error: No data</p>;
+      return detail ? <DetailSettlement detail={detail} requestDanaId={""} /> : <p>Error: No data</p>;
     default:
       return <p>Unknown status</p>;
   }
