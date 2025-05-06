@@ -4,7 +4,7 @@ stages:
   - deploy-staging
 
 variables:
-  IMAGE_NAME: "$DOCKER_USERNAME/b07-commitandpray-fe-mobile:latest"
+  IMAGE_NAME: "$DOCKER_USERNAME/fmoc-fe-mobile:latest"
   DOCKER_DRIVER: overlay2
   NEXT_PUBLIC_API_URL: http://localhost:8080/api
 
@@ -22,7 +22,7 @@ docker-build:
     - docker save -o image.tar $IMAGE_NAME
   artifacts:
     paths:
-      - fmoc-mobile-frontend/image.tar
+      - fmoc-fe-mobile/image.tar
     expire_in: 1 day
   rules:
     - when: always
@@ -36,7 +36,7 @@ docker-push:
     - docker-build
   script:
     - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-    - docker load -i fmoc-mobile-frontend/image.tar
+    - docker load -i fmoc-fe-mobile/image.tar
     - docker push $IMAGE_NAME
 
 deploy-staging:
