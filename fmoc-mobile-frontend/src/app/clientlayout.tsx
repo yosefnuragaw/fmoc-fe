@@ -1,17 +1,11 @@
 "use client";
 
-<<<<<<< HEAD
 import { useEffect, useState } from "react";
-=======
-import { useEffect } from "react";
-import Image from "next/image";
->>>>>>> b89d1bcbebb7e42090f8d319c54cdb3d04552c8c
 import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
 import { HiMiniHome, HiDocumentPlus, HiMiniUser } from "react-icons/hi2";
 
 export default function ClientLayout({ children }: { children: React.ReactNode }) {
-<<<<<<< HEAD
     const [hasMounted, setHasMounted] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [userName, setUserName] = useState<string | null>(null);
@@ -35,20 +29,6 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
     }, []);
 
     if (!hasMounted) return null;
-=======
-    const { isLoading, isLoginPage, isResetPage, isAuthenticated } = useAuth();
-    const pathname = usePathname();
-    const router = useRouter();
-
-    // Redirect to /login if not authenticated and not already on login/reset
-    useEffect(() => {
-        if (!isLoading && !isAuthenticated && !isLoginPage && !isResetPage) {
-            router.replace("/login");
-        }
-    }, [isLoading, isAuthenticated, isLoginPage, isResetPage, router]);
-
-    if (isLoading) return null;
->>>>>>> b89d1bcbebb7e42090f8d319c54cdb3d04552c8c
 
     const menuItems = [
         { href: "/home", icon: <HiMiniHome size={25} />, label: "Home" },
