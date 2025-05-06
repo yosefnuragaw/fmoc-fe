@@ -1,49 +1,84 @@
-# ------------------- STAGE 1: Build Aplikasi Spring Boot -------------------
-FROM gradle:8.6-jdk21 AS build
+# --------------- STAGE 1: Build Next.js App ---------------
+FROM node:18-alpine AS builder
+WORKDIR /app
+ARG NEXT_PUBLIC_API_URL
+ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+# Copy package files and install dependencies
+COPY package.json package-lock.json ./
+RUN npm install
+
+# Copy entire source and build the app
+COPY . .
+RUN echo "Building with NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}"
+RUN npm run build
+
+# Remove dev dependencies to keep only production deps
+RUN npm prune --production
+
+# --------------- STAGE 2: Setup Production Image with NGINX ---------------
+FROM node:18-alpine
 WORKDIR /app
 
-# Copy Gradle wrapper dan file build
-COPY gradle gradle
-COPY build.gradle settings.gradle gradlew ./
-COPY src src
+# Install NGINX via apk
+RUN apk add --no-cache nginx
 
-# Izinkan gradlew dieksekusi
-RUN chmod +x gradlew
+# Overwrite the primary NGINX configuration file (/etc/nginx/nginx.conf)
+# Menggunakan HEREDOC agar file terformat dengan benar tanpa karakter ekstra.
+RUN cat <<'EOF' > /etc/nginx/nginx.conf
+user  nginx;
+worker_processes  auto;
+error_log  /var/log/nginx/error.log warn;
+pid        /var/run/nginx.pid;
 
-RUN ./gradlew bootJar
+events {
+    worker_connections  1024;
+}
 
+http {
+    include       /etc/nginx/mime.types;
+    default_type  application/octet-stream;
+    log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
+                        '$status $body_bytes_sent "$http_referer" '
+                        '"$http_user_agent" "$http_x_forwarded_for"';
+    access_log  /var/log/nginx/access.log  main;
+    sendfile        on;
+    keepalive_timeout  65;
+    include /etc/nginx/conf.d/*.conf;
+}
+EOF
 
-# ------------------- STAGE 2: Base + NGINX + Jalankan Aplikasi -------------------
-FROM eclipse-temurin:21-jre
-WORKDIR /app
+# Copy production dependencies and built assets from the builder stage
+COPY --from=builder /app/package.json ./
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/.next ./.next
+COPY --from=builder /app/public ./public
+# Optionally copy next.config.js/next.config.ts if your app uses one
+COPY --from=builder /app/next.config.ts ./
 
-# Install NGINX
-USER root
-RUN apt-get update && apt-get install -y nginx && rm -rf /var/lib/apt/lists/*
+# Ensure the directory for additional NGINX config exists
+RUN mkdir -p /etc/nginx/conf.d
 
-# Salin JAR dari Stage 1
-COPY --from=build /app/build/libs/*.jar app.jar
+# Create NGINX configuration to proxy port 80 to the Next.js server on port 3000
+RUN cat <<'EOF' > /etc/nginx/conf.d/default.conf
+server {
+    listen 80;
+    listen [::]:80;
+    server_name _;
 
-# Buat file konfigurasi NGINX (default.conf) langsung di Dockerfile
-RUN echo "server {\n\
-    listen 80;\n\
-    server_name _;\n\
-    location / {\n\
-        proxy_pass http://127.0.0.1:8080/;\n\
-        proxy_http_version 1.1;\n\
-        proxy_set_header Host \$host;\n\
-        proxy_set_header X-Real-IP \$remote_addr;\n\
-    }\n\
-}\n" > /etc/nginx/sites-available/default
+    location / {
+        proxy_pass http://127.0.0.1:3000/;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+    }
+}
+EOF
 
-# Buat script run.sh langsung di Dockerfile untuk jalankan Spring Boot + NGINX
-RUN echo "#!/bin/bash\n\
-java -jar /app/app.jar &\n\
-exec nginx -g 'daemon off;'\n" > /run.sh && chmod +x /run.sh
-
-# Expose port 80
+# Expose port 80 (for NGINX reverse proxy)
 EXPOSE 80
-# EXPOSE 8080
-
-ENTRYPOINT ["/run.sh"]
-
+RUN apk add --no-cache netcat-openbsd
+# Debug: Print NEXT_PUBLIC_API_URL at runtime
+RUN echo "Runtime NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}"
+# Start the app and NGINX:
+# Next.js akan berjalan pada port 3000 (dijalankan via npm run start)
+# dan NGINX akan meneruskan request ke port tersebut.
+CMD ["sh", "-c", "npm run start & while ! nc -z localhost 3000; do echo 'Waiting for Next.js to be ready...'; sleep 1; done; exec nginx -g 'daemon off;'"]
