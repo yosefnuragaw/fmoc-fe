@@ -2,17 +2,15 @@
 
 import { useState } from 'react';
 import { Button } from "../../ui/button";
-import { useRouter, useParams } from 'next/navigation';
 import axios from 'axios';
 import { toast } from 'sonner';
 import { useUser } from '@/components/hooks/useUser';
 
-/* ───────────────────────────────────────────────────────── */
+interface CreateSettlementProps {
+  requestDanaId: string;
+}
 
-export default function CreateSettlement() {
-  
-  const router = useRouter();
-  const params = useParams<{ requestDanaId: string }>();
+export default function CreateSettlement({ requestDanaId }: CreateSettlementProps) {
 
   const [posting, setPosting] = useState(false);   // button spinner
   
@@ -30,7 +28,6 @@ export default function CreateSettlement() {
     if (!token) throw new Error('Belum login');
     const payload = JSON.parse(atob(token.split('.')[1]));
     const userId = payload.UUID;
-    const requestDanaId = params.requestDanaId;
 
     const res = await axios.post(
     `${process.env.NEXT_PUBLIC_API_URL}/settlement/manage/create`,
@@ -41,7 +38,7 @@ export default function CreateSettlement() {
 
     if (res.status == 201) {
         toast.success(res.data.message)
-        router.push(`/settlement/${requestDanaId}`);
+        window.location.reload();
     } 
 
     else {
