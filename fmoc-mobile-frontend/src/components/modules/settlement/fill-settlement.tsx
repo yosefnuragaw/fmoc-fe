@@ -1,8 +1,7 @@
-/* ─────────────────────────  app/(mobile)/settlement/form-settlement.tsx ───────────────────── */
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter, useParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import Input from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import CameraCapture from '@/components/cam/camera-capture';
@@ -13,12 +12,13 @@ import { SettlementRequest } from '@/components/model/settlement/models';
 
 /* ────────────────────────────  TYPES & BLANK STATE  ────────────────────────── */
 
+interface FillSettlementProps {
+  requestDanaId: string;
+}
 type FormState = SettlementRequest & {
-  /** extra field only used on the client side */
   buktiPenggunaanDanaImgData: string | null;   // ← camera base-64
 };
 
-/** minimal values so TS stops complaining – will be replaced by API data */
 const blank: FormState = {
   id: '',
   userId: '',
@@ -31,7 +31,6 @@ const blank: FormState = {
   buktiPenggunaanDanaImgData: null
 };
 
-/** which fields come from the server and must be shown read-only */
 const locked: (keyof FormState)[] = [
   'id',
   'userId',
@@ -54,10 +53,9 @@ export interface InputProps
   value?: string | number | readonly string[] | null;  // add our own
 }
 
-export default function FormSettlement() {
+export default function FormSettlement({ requestDanaId }: FillSettlementProps) {
   /* --------------- hooks & state --------------- */
   const router = useRouter();
-  const params = useParams<{ requestDanaId: string }>();   // page is /settlement/fill/[id]
   const [form, setForm] = useState<FormState>(blank);
 
   const [loading, setLoading] = useState(false);  // disables SUBMIT
@@ -73,7 +71,7 @@ export default function FormSettlement() {
       if (!token) throw new Error('Not logged in');
 
       const res = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/settlement/manage/detail/${params.requestDanaId}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/settlement/manage/detail/${requestDanaId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -97,7 +95,7 @@ export default function FormSettlement() {
       }
 
     })();
-  }, [params.requestDanaId, router]);
+  }, [requestDanaId, router]);
 
   /* ─── 2. helpers ───────────────────────────────────────────────────── */
   const persist = (f: FormState) =>

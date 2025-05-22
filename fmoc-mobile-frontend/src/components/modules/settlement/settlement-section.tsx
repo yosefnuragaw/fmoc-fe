@@ -54,9 +54,9 @@ export default function SettlementSection({ requestDanaId }: Props) {
 
   switch (status) {
     case "not_created":
-      return <CreateSettlement />;
+      return <CreateSettlement requestDanaId = {requestDanaId}/>;
     case "created_empty":
-      return <FillSettlement />;
+      return <FillSettlement requestDanaId = {requestDanaId}/>;
     case "filled":
         return detail ? <DetailSettlement detail={detail} requestDanaId = {requestDanaId}/> : <p>Error: No data</p>;
     default:
