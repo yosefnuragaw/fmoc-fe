@@ -8,6 +8,7 @@ import axios from "axios";
 import { toast } from "sonner";
 import CameraCapture from "@/components/cam/camera-capture";
 
+
 const categories = { BBMMobil: 0, BBMMotor: 1, Parkir: 2, Toll: 3 } as const;
 type CategoryType = keyof typeof categories;
 const initialFormData = {
@@ -22,6 +23,17 @@ const initialFormData = {
   transactionDate: "",
 };
 
+function formatRupiah(value: string): string {
+  const number = parseInt(value.replace(/\D/g, ""), 10);
+  if (isNaN(number)) return "";
+  // const adjusted = number / 10; // bagi 10
+  return new Intl.NumberFormat("id-ID", {
+    style: "currency",
+    currency: "IDR",
+    minimumFractionDigits: 2,
+  }).format(number);
+}
+
 export default function FormRequest() {
   const pathname = usePathname();
   const [loading, setLoading] = useState(false);
@@ -29,7 +41,6 @@ export default function FormRequest() {
   const [previewInvoice, setPreviewInvoice] = useState<string | null>(null);
   const [imgKey, setImgKey] = useState<number>(Date.now());
   const [showCamera, setShowCamera] = useState(false);
-
   // Load saved formData on mount
   useEffect(() => {
     const saved = localStorage.getItem("formData");
@@ -60,13 +71,46 @@ export default function FormRequest() {
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
+    
+    const { name, value } = e.target;
+    let cleanedValue = "";
+    if (name === "nominal") {
+      cleanedValue = value.replace(/[^0-9.]/g, "");
+      }
+      
+    const updated = {
+      ...formData,
+      [name]: name === "nominal" ? cleanedValue : value,
+    };
+    
+    setFormData(updated);
+    saveForm(updated);
+  };
+
+    const handleBlur = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     const updated = {
       ...formData,
-      [name]: name === "nominal" ? value.replace(/[^0-9.]/g, "") : value,
+      [name]: name === "nominal" ? formatRupiah(value): value,
     };
     setFormData(updated);
     saveForm(updated);
+  };
+
+  const handleFocus = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+      let cleanedValue = "";
+      if (name === "nominal") {
+        cleanedValue = value.replace(/[^0-9.]/g, "");
+        }
+        
+      const updated = {
+        ...formData,
+        [name]: name === "nominal" ? cleanedValue.slice(0,-2) : value,
+      };
+      
+      setFormData(updated);
+      saveForm(updated);
   };
 
   // Camera capture callback
@@ -127,7 +171,7 @@ export default function FormRequest() {
       setPreviewInvoice(null);
     } catch (error) {
       console.error(error);
-      toast.error("Masih terdapat pengajuan dana untuk kategori "+formData.category);
+      toast.error("Error: "+error);
     } finally {
       setLoading(false);
     }
@@ -160,7 +204,11 @@ export default function FormRequest() {
           <p className="text-xs sm:text-sm mt-1 font-semibold">
             Nominal<span className="text-danger">*</span>
           </p>
-          <Input name="nominal" value={formData.nominal} onChange={handleChange} required />
+          <Input name="nominal" value={formData.nominal} type="text"
+          onChange={handleChange}
+          onBlur={handleBlur}
+          onFocus={handleFocus} 
+          required />
         </div>
 
         {/* Category */}
