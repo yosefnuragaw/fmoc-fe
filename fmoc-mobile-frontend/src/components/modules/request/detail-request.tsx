@@ -108,7 +108,7 @@ export default function DetailRequest() {
           />
           {/* Tab buttons */}
           <div className="flex space-x-4 sm:space-x-6">
-            {["req", ...(data?.approved ? ["set"] : [])].map((tab) => (
+            {["req", ...(data?.approved && data?.end ? ["set"] : [])].map((tab) => (
               <button
                 key={tab}
                 className={`pb-2 ${activeTab === tab
@@ -129,7 +129,7 @@ export default function DetailRequest() {
           </div>
 
           {/* Cancel button */}
-          {data?.approved === false && (
+          {(data?.approved === false && data?.end === false ) && (
             <button
               className="bg-red-600 hover:bg-red-700 text-white text-xs px-3 py-1 rounded-md mb-2"
               onClick={handleCancel}
