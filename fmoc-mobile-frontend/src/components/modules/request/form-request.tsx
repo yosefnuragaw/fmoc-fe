@@ -7,6 +7,7 @@ import Input from "../../ui/input";
 import axios from "axios";
 import { toast } from "sonner";
 import CameraCapture from "@/components/cam/camera-capture";
+import { AxiosError } from 'axios';
 
 
 const categories = { BBMMobil: 0, BBMMotor: 1, Parkir: 2, Toll: 3 } as const;
@@ -170,8 +171,10 @@ export default function FormRequest() {
       setFormData(initialFormData);
       setPreviewInvoice(null);
     } catch (error) {
-      console.error(error);
-      toast.error("Error: "+error);
+      const axiosError = error as AxiosError;
+      const data = axiosError.response?.data as { message: string };
+      const errorMessage = data?.message || "Unknown error";
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
