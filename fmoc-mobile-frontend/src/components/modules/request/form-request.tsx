@@ -170,8 +170,11 @@ export default function FormRequest() {
       setFormData(initialFormData);
       setPreviewInvoice(null);
     } catch (error) {
-      console.error(error);
-      toast.error("Error: "+error);
+      const errorMessage =
+          error?.response?.data?.message || // custom error from server
+          error?.response?.data?.error ||   // fallback if the API returns "error"
+          "Terjadi kesalahan saat mengajukan dana.";
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
