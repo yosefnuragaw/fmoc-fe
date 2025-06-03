@@ -6,6 +6,7 @@ import { RequestCardList } from "./column-request"
 import HeroProfile from "../profile/header"
 import { useUser } from "@/components/hooks/useUser"
 import { useRequestData } from "@/components/hooks/useRequestDana"
+import LoadingSpinner from "@/components/ui/loading-spinner"
 
 export default function AllRequest() {
     const router = useRouter()
@@ -14,7 +15,7 @@ export default function AllRequest() {
     const { userData, loading: userLoading, error: userError } = useUser()
     const { data, loading: dataLoading, error: dataError } = useRequestData()
 
-    if (userLoading || dataLoading) return <p className="text-center mt-10">Loading...</p>
+    if (userLoading || dataLoading) return <div className="flex justify-center min-h-screen items-center"><LoadingSpinner /></div>;
     if (userError || dataError) return <p className="text-red-500 text-center mt-10">{userError || dataError}</p>
 
     return (

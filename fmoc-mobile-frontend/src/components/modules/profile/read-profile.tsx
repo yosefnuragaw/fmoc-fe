@@ -5,6 +5,7 @@ import { Button } from "../../ui/button";
 import axios from "axios";
 import { toast } from "sonner";
 import { Area, UserData } from "@/components/model/profile/models";
+import LoadingSpinner from "@/components/ui/loading-spinner";
 
 type Transaction = {
     time: string;
@@ -119,7 +120,7 @@ const UserProfileComponent: React.FC = () => {
     }, []);
 
     if (loading) {
-        return <div className="p-6 text-center">Loading...</div>;
+        return <div className="flex justify-center min-h-screen items-center"><LoadingSpinner /></div>;
     }
 
     return (
@@ -229,7 +230,7 @@ const UserProfileComponent: React.FC = () => {
 
                             return (
                                 <div
-                                    key={transaction.wo}
+                                    key={transaction.time}
                                     className="flex items-center gap-3 p-2 border rounded-md bg-white shadow-sm"
                                 >
                                     <div className="bg-accent-base text-center rounded-md px-1.5 py-2 shrink-0">

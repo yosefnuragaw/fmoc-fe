@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"
 import FormRequest from "./form-request"
 import HeroProfile from "../profile/header"
 import { useUser } from "@/components/hooks/useUser"
+import LoadingSpinner from "@/components/ui/loading-spinner"
 
 export default function CreateRequest() {
     const router = useRouter()
@@ -16,7 +17,7 @@ export default function CreateRequest() {
 
             <div className="flex space-x-4 sm:space-x-6 border-b mt-6 ">
                 <p className="pb-2 text-xs font-medium text-blue-600 border-b-2 border-blue-600">Pengajuan Dana</p>
-                {loading && <p>Loading...</p>}
+                {loading && <div className="flex justify-center min-h-screen items-center"><LoadingSpinner /></div>}
 
             </div>
 

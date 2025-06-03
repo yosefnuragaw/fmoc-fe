@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation"; // Untuk Next.js App Router
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 interface SidebarProps {
@@ -110,13 +110,7 @@ export default function Sidebar({ isSidebarOpen, toggleSidebar }: SidebarProps) 
             </button>
           </div>
         </div>
-
-
-
-
       </div>
     </div>
   );
-
-
 }

@@ -6,23 +6,23 @@ import RequestTab from '@/components/ui/request-tab';
 import HeroProfile from '../profile/header';
 import { useParams, useRouter } from "next/navigation";
 import { useEffect } from "react";
+import LoadingSpinner from "@/components/ui/loading-spinner";
 
 export default function SettlementPage() {
   const  params  = useParams();
   const router = useRouter();
   const rawId = params.id;
   if (typeof rawId !== 'string') {
-      // Optional: redirect back or render a fallback while we sort out the param
       useEffect(() => {
-        router.push('/home');      // or wherever makes sense
+        router.push('/home');
       }, [router]);
   
-      return <p>Loading…</p>;
+      return <div className="flex justify-center min-h-screen items-center"><LoadingSpinner /></div>;
     }
     const requestDanaId = rawId; 
   const { userData, loading: userLoading, error: userError } = useUser()
   
-  if (userLoading ) return <p className="text-center mt-10">Loading...</p>
+  if (userLoading ) return <div className="flex justify-center min-h-screen items-center"><LoadingSpinner /></div>
   if (userError ) return <p className="text-red-500 text-center mt-10">{userError }</p>
 
   return (
