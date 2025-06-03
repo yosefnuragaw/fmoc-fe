@@ -155,7 +155,7 @@ export default function DetailRequest() {
             )}
             {(data?.status.includes("Approved by")) && (
               <Button
-                className="flex items-center gap-1 border-success text-success w-full justify-center body-2"
+                className="flex items-center gap-1 border-success text-success w-full justify-center body-4"
                 variant="outline_success"
                 onClick={() => setIsStatusDialogOpen(true)}
               >
@@ -164,7 +164,7 @@ export default function DetailRequest() {
             )}
             {data?.status.includes("approval from") || data?.status.includes("Waiting") && (
               <Button
-                className="flex items-center gap-1 border-warning text-warning w-full justify-center body-2"
+                className="flex items-center gap-1 border-warning text-warning w-full justify-center body-3"
                 variant="outline_warning"
                 onClick={() => setIsStatusDialogOpen(true)}
               >
@@ -173,17 +173,17 @@ export default function DetailRequest() {
             )}
             {data?.status.includes("Rejected") && (
               <Button
-                className="flex items-center gap-1 border-destructive text-destructive w-full justify-center body-2"
+                className="flex items-center gap-1 border-destructive text-destructive w-full justify-center body-3"
                 variant="outline_danger"
                 onClick={() => setIsStatusDialogOpen(true)}
               >
                 <FaHistory /> {data?.status}
               </Button>
             )}
-            {data?.status.includes("Pending") && !data?.status.includes("approval") && (
+            {data?.status.includes("Pending") && data?.status.includes("approval") && (
               <Button
-                className="flex items-center gap-1 border-destructive text-destructive w-full justify-center body-2"
-                variant="status_accent"
+                className="flex items-center gap-1 border-warning text-warning w-full justify-center body-3"
+                variant="outline_warning"
                 onClick={() => setIsStatusDialogOpen(true)}
               >
                 <FaHistory /> {data?.status}
