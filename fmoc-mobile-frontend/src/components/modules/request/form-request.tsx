@@ -7,6 +7,7 @@ import Input from "../../ui/input";
 import axios from "axios";
 import { toast } from "sonner";
 import CameraCapture from "@/components/cam/camera-capture";
+import { AxiosError } from 'axios';
 
 
 const categories = { BBMMobil: 0, BBMMotor: 1, Parkir: 2, Toll: 3 } as const;
@@ -170,12 +171,11 @@ export default function FormRequest() {
       setFormData(initialFormData);
       setPreviewInvoice(null);
     } catch (error) {
-      if (error instanceof AxiosError) {
-            errorMessage =
-              error.response?.data?.message ||
-              error.response?.data?.error ||
-              errorMessage;
-          }
+      const axiosError = error as AxiosError;
+      const errorMessage =
+          axiosError?.response?.data?.message || // custom error from server
+          axiosError?.response?.data?.error ||   // fallback if the API returns "error"
+          "Terjadi kesalahan saat mengajukan dana.";
       toast.error(errorMessage);
     } finally {
       setLoading(false);
