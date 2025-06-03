@@ -172,10 +172,8 @@ export default function FormRequest() {
       setPreviewInvoice(null);
     } catch (error) {
       const axiosError = error as AxiosError;
-      const errorMessage =
-          axiosError?.response?.data?.message || // custom error from server
-          axiosError?.response?.data?.error ||   // fallback if the API returns "error"
-          "Terjadi kesalahan saat mengajukan dana.";
+      const data = axiosError.response?.data as { message: string };
+      const errorMessage = data?.message || "Unknown error";
       toast.error(errorMessage);
     } finally {
       setLoading(false);
