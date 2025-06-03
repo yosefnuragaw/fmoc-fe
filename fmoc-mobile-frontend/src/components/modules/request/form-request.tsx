@@ -170,10 +170,12 @@ export default function FormRequest() {
       setFormData(initialFormData);
       setPreviewInvoice(null);
     } catch (error) {
-      const errorMessage =
-          error?.response?.data?.message || // custom error from server
-          error?.response?.data?.error ||   // fallback if the API returns "error"
-          "Terjadi kesalahan saat mengajukan dana.";
+      if (error instanceof AxiosError) {
+            errorMessage =
+              error.response?.data?.message ||
+              error.response?.data?.error ||
+              errorMessage;
+          }
       toast.error(errorMessage);
     } finally {
       setLoading(false);
