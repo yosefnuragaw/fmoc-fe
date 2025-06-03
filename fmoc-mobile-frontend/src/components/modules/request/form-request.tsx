@@ -1,14 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { usePathname } from "next/navigation";
+import CameraCapture from "@/components/cam/camera-capture";
+import axios, { AxiosError } from "axios";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import { Button } from "../../ui/button";
 import Input from "../../ui/input";
-import axios from "axios";
-import { toast } from "sonner";
-import CameraCapture from "@/components/cam/camera-capture";
-import { AxiosError } from 'axios';
-
 
 const categories = { BBMMobil: 0, BBMMotor: 1, Parkir: 2, Toll: 3 } as const;
 type CategoryType = keyof typeof categories;
@@ -42,6 +40,7 @@ export default function FormRequest() {
   const [previewInvoice, setPreviewInvoice] = useState<string | null>(null);
   const [imgKey, setImgKey] = useState<number>(Date.now());
   const [showCamera, setShowCamera] = useState(false);
+  const router = useRouter();
   // Load saved formData on mount
   useEffect(() => {
     const saved = localStorage.getItem("formData");
@@ -149,10 +148,12 @@ export default function FormRequest() {
       if (!token) throw new Error("No token");
       const payload = JSON.parse(atob(token.split(".")[1]));
       const userId = payload.UUID;
+      const beforeComma = formData.nominal.split(',')[0];
+      const cleanedNominal = beforeComma.replace(/[^0-9]/g, "");
       const body = {
         wo: formData.wo,
         userId,
-        nominal: parseFloat(formData.nominal) || 0,
+        nominal: cleanedNominal,
         description: formData.description,
         imgData: formData.imgData,
         latitude: formData.latitude,
@@ -177,6 +178,8 @@ export default function FormRequest() {
       toast.error(errorMessage);
     } finally {
       setLoading(false);
+      // route to home with next
+      router.push("/home");
     }
   };
 

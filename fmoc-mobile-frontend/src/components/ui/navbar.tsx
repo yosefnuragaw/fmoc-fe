@@ -8,37 +8,37 @@ interface NavbarProps {
 
 export default function Navbar({ toggleSidebar }: NavbarProps) {
   const [user, setUser] = useState<{ name: string } | null>(null);
-  const [hasMounted, setHasMounted] = useState(false); // Cegah SSR error
+  const [hasMounted, setHasMounted] = useState(false);
 
   useEffect(() => {
-    setHasMounted(true); // Menandai bahwa komponen sudah di-mount di client
+    setHasMounted(true);
     
     const getUser = () => {
       const storedUser = localStorage.getItem("name");
       setUser(storedUser ? { name: storedUser } : { name: "Guest" });
     };
 
-    getUser(); // Ambil data user pertama kali
+    getUser();
 
     const handleStorageChange = (event: StorageEvent) => {
       if (event.key === "name") {
-        getUser(); // Update state saat `name` berubah di localStorage
+        getUser();
       }
     };
 
     window.addEventListener("storage", handleStorageChange);
-    window.addEventListener("logoutEvent", getUser); // Tambahkan listener logout
-    window.addEventListener("authChange", getUser); 
+    window.addEventListener("logoutEvent", getUser);
+    window.addEventListener("authChange", getUser);
 
     return () => {
       window.removeEventListener("storage", handleStorageChange);
       window.removeEventListener("logoutEvent", getUser);
-      window.removeEventListener("authChange", getUser); 
+      window.removeEventListener("authChange", getUser);
     };
   }, []);
 
   if (!hasMounted) {
-    return null; // Mencegah render SSR yang berbeda dengan client
+    return null;
   }
 
   return (

@@ -1,4 +1,5 @@
 "use client";
+import LoadingSpinner from "@/components/ui/loading-spinner";
 import axios from "axios";
 import { useEffect, useState } from "react";
 
@@ -47,7 +48,7 @@ export default function Home() {
 	}, []);
 
 	if (loading) {
-		return <div className="p-6 text-center">Loading...</div>;
+		return <div className="flex justify-center min-h-screen items-center"><LoadingSpinner /></div>;;
 	}
 
 	if (!userData) {

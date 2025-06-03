@@ -7,6 +7,7 @@ import FillSettlement from "@/components/modules/settlement/fill-settlement";
 import DetailSettlement from "@/components/modules/settlement/detail-settlement";
 import type { SettlementDetails } from "@/components/model/settlement/models";
 import axios from 'axios';
+import LoadingSpinner from "@/components/ui/loading-spinner";
 
 interface Props {
     requestDanaId: string;
@@ -50,7 +51,7 @@ export default function SettlementSection({ requestDanaId }: Props) {
     })();
   }, [requestDanaId, router]);
 
-  if (status === "loading") return <p>Loading...</p>;
+  if (status === "loading") return <div className="flex justify-center min-h-screen items-center"><LoadingSpinner /></div>;
 
   switch (status) {
     case "not_created":

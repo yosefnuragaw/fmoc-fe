@@ -5,6 +5,7 @@ import { Button } from "../../ui/button";
 import axios from 'axios';
 import { toast } from 'sonner';
 import { useUser } from '@/components/hooks/useUser';
+import LoadingSpinner from '@/components/ui/loading-spinner';
 
 interface CreateSettlementProps {
   requestDanaId: string;
@@ -16,10 +17,9 @@ export default function CreateSettlement({ requestDanaId }: CreateSettlementProp
   
   const { userData, loading: userLoading, error: userError } = useUser()
   
-  if (userLoading ) return <p className="text-center mt-10">Loading...</p>
+  if (userLoading ) return <div className="flex justify-center min-h-screen items-center"><LoadingSpinner /></div>
   if (userError ) return <p className="text-red-500 text-center mt-10">{userError }</p>
 
-  /* click-handler --------------------------------------------------------- */
     const handleCreate = async () => {
 
     setPosting(true);
@@ -47,7 +47,6 @@ export default function CreateSettlement({ requestDanaId }: CreateSettlementProp
     }
   };
 
-  /* ─────────────── render ─────────────── */
   return (
       <div className="flex-1 overflow-y-auto pb-12">
         <div className="flex flex-col gap-3 p-4">

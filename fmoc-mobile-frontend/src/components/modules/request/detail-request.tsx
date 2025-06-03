@@ -10,6 +10,7 @@ import { cancelRequest } from "@/components/hooks/useCancelRequest";
 import { Button } from "@/components/ui/button";
 import { FaHistory } from "react-icons/fa";
 import StatusHistoryPopup from "@/components/ui/dialog-status";
+import LoadingSpinner from "@/components/ui/loading-spinner";
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
@@ -92,7 +93,7 @@ export default function DetailRequest() {
     }
   };
 
-  if (userLoading || dataLoading) return <p className="text-center mt-10">Loading...</p>;
+  if (userLoading || dataLoading) return <div className="flex justify-center min-h-screen items-center"><LoadingSpinner /></div>;
   if (userError || dataError) return <p className="text-red-500 text-center mt-10">{userError || dataError}</p>;
 
   return (
