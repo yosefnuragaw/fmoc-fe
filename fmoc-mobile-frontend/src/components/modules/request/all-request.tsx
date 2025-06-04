@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from "react"
+import React, { useMemo, useState } from "react"
 import { useRouter } from "next/navigation"
 import { RequestCardList } from "./column-request"
 import HeroProfile from "../profile/header"
@@ -30,6 +30,28 @@ export default function AllRequest() {
     if (userLoading || dataLoading) return <div className="flex justify-center min-h-screen items-center"><LoadingSpinner /></div>;
     if (userError || dataError) return <p className="text-red-500 text-center mt-10">{userError || dataError}</p>
 
+    const [filterKategori, setFilterKategori] = useState("All")
+    const [filterStatus, setFilterStatus] = useState("All")
+
+    const filteredData = useMemo(() => {
+    if (!data || data.length === 0) return []
+
+
+    return data.filter((item) => {
+      const matchesKategori =
+        filterKategori === "All" ||
+        item.category?.toLowerCase() === filterKategori.toLowerCase()
+
+
+      const matchesStatus =
+        filterStatus === "All" ||
+        item.status?.toLowerCase().includes(filterStatus.toLowerCase())
+
+
+      return matchesKategori && matchesStatus
+    })
+    }, [data, activeTab, filterKategori, filterStatus])
+    
     return (
         <div className="flex flex-col h-screen w-full max-w-md mx-auto px-4 ">
             <HeroProfile userData={userData} />
