@@ -28,29 +28,24 @@ export default function AllRequest() {
     const { userData, loading: userLoading, error: userError } = useUser()
     const { data, loading: dataLoading, error: dataError } = useRequestData()
 
-    
-
-    
-
     const filteredData = useMemo(() => {
     if (!data || data.length === 0) return []
 
-
-    return data.filter((item) => {
-      const matchesKategori =
-        filterKategori === "All" ||
-        item.category?.toLowerCase() === filterKategori.toLowerCase()
-
-
-      const matchesStatus =
-        filterStatus === "All" ||
-        item.status?.toLowerCase().includes(filterStatus.toLowerCase())
+        return data.filter((item) => {
+        const matchesKategori =
+            filterKategori === "All" ||
+            item.category?.toLowerCase() === filterKategori.toLowerCase()
 
 
-      return matchesKategori && matchesStatus
-    })
-    }, [data, activeTab, filterKategori, filterStatus])
-    
+        const matchesStatus =
+            filterStatus === "All" ||
+            item.status?.toLowerCase().includes(filterStatus.toLowerCase())
+
+
+        return matchesKategori && matchesStatus
+        })
+        }, [data, activeTab, filterKategori, filterStatus])
+
     if (userLoading || dataLoading) return <div className="flex justify-center min-h-screen items-center"><LoadingSpinner /></div>;
     if (userError || dataError) return <p className="text-red-500 text-center mt-10">{userError || dataError}</p>
     return (
@@ -119,7 +114,7 @@ export default function AllRequest() {
                 </DropdownMenu>
             </div>
             <div className="flex-1 pb-12">
-                <RequestCardList data={data} selectSettled={activeTab === "history"} />
+                <RequestCardList data={filteredData} selectSettled={activeTab === "history"} />
             </div>
         </div>
     )
