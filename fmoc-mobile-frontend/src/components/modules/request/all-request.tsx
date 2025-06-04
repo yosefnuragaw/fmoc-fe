@@ -23,15 +23,14 @@ import { Button } from "@/components/ui/button"
 export default function AllRequest() {
     const router = useRouter()
     const [activeTab, setActiveTab] = useState<'ongoing' | 'history'>('ongoing')
-
+    const [filterKategori, setFilterKategori] = useState("All")
+    const [filterStatus, setFilterStatus] = useState("All")
     const { userData, loading: userLoading, error: userError } = useUser()
     const { data, loading: dataLoading, error: dataError } = useRequestData()
 
-    if (userLoading || dataLoading) return <div className="flex justify-center min-h-screen items-center"><LoadingSpinner /></div>;
-    if (userError || dataError) return <p className="text-red-500 text-center mt-10">{userError || dataError}</p>
+    
 
-    const [filterKategori, setFilterKategori] = useState("All")
-    const [filterStatus, setFilterStatus] = useState("All")
+    
 
     const filteredData = useMemo(() => {
     if (!data || data.length === 0) return []
@@ -52,10 +51,12 @@ export default function AllRequest() {
     })
     }, [data, activeTab, filterKategori, filterStatus])
     
+    if (userLoading || dataLoading) return <div className="flex justify-center min-h-screen items-center"><LoadingSpinner /></div>;
+    if (userError || dataError) return <p className="text-red-500 text-center mt-10">{userError || dataError}</p>
     return (
         <div className="flex flex-col h-screen w-full max-w-md mx-auto px-4 ">
             <HeroProfile userData={userData} />
-
+            
             <div className="flex text-xs font-medium space-x-4 sm:space-x-6 border-b pt-6 ">
                 {["ongoing", "history"].map((tab) => (
                     <button
@@ -71,7 +72,52 @@ export default function AllRequest() {
                     </button>
                 ))}
             </div>
+            
+            <div className="flex gap-2 mt-4 overflow-x-auto">
+            <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                    <Button className="flex gap-2 items-center text-sm px-3 py-1 h-auto">
+                    {filterKategori === "All" ? "Kategori" : filterKategori}
+                    <HiMiniChevronDown className="w-4 h-4" />
+                    </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-56">
+                    <DropdownMenuLabel>Kategori</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuRadioGroup value={filterKategori} onValueChange={setFilterKategori}>
+                    <DropdownMenuRadioItem value="All">Semua</DropdownMenuRadioItem>
+                    <DropdownMenuRadioItem value="BBM Mobil">BBM Mobil</DropdownMenuRadioItem>
+                    <DropdownMenuRadioItem value="BBM Motor">BBM Motor</DropdownMenuRadioItem>
+                    <DropdownMenuRadioItem value="Toll">Toll</DropdownMenuRadioItem>
+                    <DropdownMenuRadioItem value="Parkir">Parkir</DropdownMenuRadioItem>
+                    </DropdownMenuRadioGroup>
+                </DropdownMenuContent>
+            </DropdownMenu>
 
+
+            <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                    <Button className="flex gap-2 items-center text-sm px-3 py-1 h-auto">
+                    {filterStatus === "All" ? "Status" : filterStatus}
+                    <HiMiniChevronDown className="w-4 h-4" />
+                    </Button>
+                </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-56">
+                <DropdownMenuLabel>Status</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                        <DropdownMenuRadioGroup value={filterStatus} onValueChange={setFilterStatus}>
+                        <DropdownMenuRadioItem value="All">Semua</DropdownMenuRadioItem>
+                        <DropdownMenuRadioItem value="Pending">Pending</DropdownMenuRadioItem>
+                        <DropdownMenuRadioItem value="Approved">Approved</DropdownMenuRadioItem>
+                        <DropdownMenuRadioItem value="Rejected">Rejected</DropdownMenuRadioItem>
+                        <DropdownMenuRadioItem value="Transferred">Transferred</DropdownMenuRadioItem>
+                        {activeTab === "history" && (
+                            <DropdownMenuRadioItem value="Settled">Settled</DropdownMenuRadioItem>
+                        )}
+                        </DropdownMenuRadioGroup>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+            </div>
             <div className="flex-1 pb-12">
                 <RequestCardList data={data} selectSettled={activeTab === "history"} />
             </div>
